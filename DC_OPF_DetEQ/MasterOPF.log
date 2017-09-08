@@ -1,0 +1,139 @@
+
+--- Job MasterOPF.gms Start 09/06/17 13:51:50 24.5.6 r55090 WEX-WEI x86 64bit/MS Windows
+GAMS 24.5.6   Copyright (C) 1987-2015 GAMS Development. All rights reserved
+Licensee: Medium MUD - 10 User License                   G170505:1033AO-GEN
+          Penn State University, John & Willie Leone Dept of Energy DC11293
+          License for teaching and research at degree granting institutions
+          License_Admin:_Mort_Webster,_mort@psu.edu________________________
+--- Starting compilation
+--- MasterOPF.gms(1) 2 Mb
+--- .30Bus.inc(335) 3 Mb
+--- MasterOPF.gms(64) 3 Mb
+--- Starting execution: elapsed 0:00:00.049
+--- MasterOPF.gms(396) 50 Mb
+--- Generating MIP model opf
+--- MasterOPF.gms(397) 51 Mb
+---   2,566 rows  1,106 columns  9,260 non-zeroes
+---   196 discrete-columns
+--- Executing CPLEX: elapsed 0:00:00.299
+
+IBM ILOG CPLEX   24.5.6 r55090 Released Nov 27, 2015 WEI x86 64bit/MS Windows 
+--- GAMS/Cplex licensed for continuous and discrete problems.
+Cplex 12.6.2.0
+
+Reading data...
+Starting Cplex...
+Space for names approximately 0.12 Mb
+Use option 'names no' to turn use of names off
+Found incumbent of value 925122.725000 after 0.00 sec. (0.08 ticks)
+Tried aggregator 2 times.
+MIP Presolve eliminated 1 rows and 5 columns.
+MIP Presolve modified 2628 coefficients.
+Aggregator did 12 substitutions.
+Reduced MIP has 2553 rows, 1089 columns, and 8858 nonzeros.
+Reduced MIP has 196 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (5.51 ticks)
+Probing time = 0.00 sec. (1.51 ticks)
+Tried aggregator 1 time.
+Reduced MIP has 2553 rows, 1089 columns, and 8858 nonzeros.
+Reduced MIP has 196 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.01 sec. (3.50 ticks)
+Probing time = 0.00 sec. (1.41 ticks)
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: none, using 1 thread.
+Tried aggregator 1 time.
+No LP presolve or aggregator reductions.
+Presolve time = 0.00 sec. (0.99 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =           746.000000
+Perturbation started.
+Iteration:   101   Dual objective     =           746.000000
+Iteration:   263   Dual objective     =           746.006533
+Iteration:   404   Dual objective     =           746.010652
+Iteration:   565   Dual objective     =           746.016425
+Iteration:   745   Dual objective     =           746.021210
+Iteration:   856   Dual objective     =           746.022114
+Iteration:   986   Dual objective     =           746.023134
+Iteration:  1082   Dual objective     =          1114.223574
+Iteration:  1199   Dual objective     =          1983.673498
+Iteration:  1309   Dual objective     =          1983.675068
+Iteration:  1414   Dual objective     =          1987.957212
+Iteration:  1520   Dual objective     =          1988.063116
+Removing perturbation.
+Root relaxation solution time = 0.05 sec. (56.79 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                       925122.7250      746.0000            99.92%
+Found incumbent of value 925122.725000 after 0.06 sec. (71.73 ticks)
+      0     0     1988.1954     2   925122.7250     1988.1954     1602   99.79%
+*     0+    0                        22274.2338     1988.1954            91.07%
+Found incumbent of value 22274.233833 after 0.08 sec. (89.18 ticks)
+      0     0     1990.2654     5    22274.2338       Cuts: 5     1739   91.06%
+      0     0     1990.6127     6    22274.2338      Cuts: 18     1801   91.06%
+      0     0     1995.7098     7    22274.2338    MIRcuts: 9     1899   91.04%
+*     0+    0                         2154.4634     1995.7098             7.37%
+Found incumbent of value 2154.463442 after 0.19 sec. (216.41 ticks)
+      0     0     1995.7098     5     2154.4634    MIRcuts: 7     1974    7.37%
+      0     0     1995.7098     8     2154.4634    MIRcuts: 6     2076    7.37%
+*     0+    0                         2011.4000     1995.7098             0.78%
+Found incumbent of value 2011.400000 after 0.39 sec. (481.48 ticks)
+      0     2     1995.7098     8     2011.4000     1995.7098     2076    0.78%
+Elapsed time = 0.41 sec. (513.60 ticks, tree = 0.00 MB, solutions = 4)
+     11    12     2000.7452     4     2011.4000     1995.7098     4997    0.78%
+     12    13     2000.7819     3     2011.4000     1995.7098     5075    0.78%
+     13    14     2001.0809     3     2011.4000     1995.7098     5472    0.78%
+     14    15     2006.2011     4     2011.4000     1995.7098     5762    0.78%
+     15    16     2005.9457     4     2011.4000     1995.7098     7195    0.78%
+     16    17     2005.8791     4     2011.4000     1995.7098     7250    0.78%
+     17    18     2007.1597     3     2011.4000     1995.7098     7255    0.78%
+     18    17        cutoff           2011.4000     1995.7098     7259    0.78%
+     19    16        cutoff           2011.4000     1995.7098     7306    0.78%
+*    21     5      integral     0     2001.4000     1995.7319     8024    0.28%
+Found incumbent of value 2001.400000 after 0.77 sec. (910.60 ticks)
+
+Mixed integer rounding cuts applied:  12
+
+Root node processing (before b&c):
+  Real time             =    0.41 sec. (513.55 ticks)
+Sequential b&c:
+  Real time             =    0.52 sec. (565.97 ticks)
+                          ------------
+Total (root+branch&cut) =    0.92 sec. (1079.53 ticks)
+MIP status(102): integer optimal, tolerance
+Cplex Time: 0.92sec (det. 1079.53 ticks)
+Fixing integer variables, and solving final LP...
+Tried aggregator 1 time.
+LP Presolve eliminated 1483 rows and 782 columns.
+Aggregator did 9 substitutions.
+Reduced LP has 1074 rows, 315 columns, and 2448 nonzeros.
+Presolve time = 0.00 sec. (1.25 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =           766.000000
+Perturbation started.
+Iteration:    51   Dual objective     =           766.000000
+Iteration:   118   Dual objective     =           766.000200
+Iteration:   206   Dual objective     =          1126.588167
+Removing perturbation.
+Fixed MIP status(1): optimal
+Cplex Time: 0.00sec (det. 6.25 ticks)
+
+Solution satisfies tolerances.
+
+MIP Solution:         2001.400000    (10584 iterations, 40 nodes)
+Final Solve:          2001.400000    (254 iterations)
+
+Best possible:        1999.752048
+Absolute gap:            1.647952
+Relative gap:            0.000823
+
+--- Restarting execution
+--- MasterOPF.gms(397) 48 Mb
+--- Reading solution for model opf
+--- MasterOPF.gms(397) 49 Mb
+*** Status: Normal completion
+--- Job MasterOPF.gms Stop 09/06/17 13:51:53 elapsed 0:00:02.263

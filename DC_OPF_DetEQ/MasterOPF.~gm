@@ -1,0 +1,64 @@
+$include        "30Bus.inc"
+
+SET subs(s)                Active Scenarios        /s3/;
+
+SCALARS
+ThetaMax   maximum value of theta [radians] /.5/
+cpns       Cost of non-served power         /1000/
+LineCost   Cost to build new Line           /10/
+;
+
+
+VARIABLES
+z                Value of the objective function
+p(l, i, j, subs)           Active power Flow in line i - j [MW]
+theta(i, subs)         Angle of voltage in node i [rad]
+;
+
+POSITIVE VARIABLES
+x(g, subs)             Active power dispatched by generator g [MW]
+pns(i, subs)           Non-served power in node i [MW]
+;
+
+Binary VARIABLES
+y(l,i,j)            1 if line is built from i to j 0 otherwise
+;
+
+Equations
+eSubFun                          Objective Function
+eDemand(i, subs)                    Demand met from generation and power inflow
+ePowerFlow(l,i,j, subs)             DC power flow in existing lines
+eCandLineFlowHi(l,i,j,subs)         DC power flow upper bound in candidate lines
+eCandLineFlowLow(l,i,j,subs)        DC power flow lower bound in candidate lines
+eCandCapHi(l,i,j,subs)              Line capacity upper bound in candidate lines
+eCandCapLow(l,i,j,subs)             Line capacity lower bound in candidate lines
+;
+
+eSubFun..                                        z =e= sum(subs, sum(g, pVarCost(g, subs) * x(g, subs)) + sum(i, pns(i, subs) * cpns))/1 +sum((l,i,j)$cand(l,i,j),LineCost*y(l,i,j));
+eDemand(i, subs)..                                  sum(g$ig(i,g), x(g, subs)) - sum((l,j) $ ii(l,i,j), p(l,i,j, subs)) + sum((l,j) $ ii(l,j,i), p(l,j,i, subs)) =g= pLoad(i, subs) - pns(i, subs);
+ePowerFlow(l,i,j,subs)$(built(l,i,j))..             p(l,i,j, subs) =e= 133*(theta(i, subs) - theta(j, subs)) / (dtl(l,i,j,'x'));
+eCandLineFlowHi(l,i,j,subs)$(cand(l,i,j))..         p(l,i,j, subs) =l= 1000*(1-y(l,i,j))+ 133*(theta(i, subs) - theta(j, subs)) / (dtl(l,i,j,'x'));
+eCandLineFlowLow(l,i,j,subs)$(cand(l,i,j))..        p(l,i,j, subs) =g= -1000*(1-y(l,i,j))+ 133*(theta(i, subs) - theta(j, subs)) / (dtl(l,i,j,'x'));
+eCandCapHi(l,i,j,subs)$(cand(l,i,j))..              p(l,i,j,subs) =l= y(l,i,j)*dtl(l,i,j,'pmax');
+eCandCapLow(l,i,j,subs)$(cand(l,i,j))..             p(l,i,j,subs) =g= -y(l,i,j)*dtl(l,i,j,'pmax');
+
+ii(l,i,j) $ dtl(l,i,j,'pmax') = YES;
+built(l,i,j)$dtl(l,i,j,'current')=YES;
+cand(l,i,j) $dtl(l,i,j,'can')= Yes;
+x.up(g, subs) = pMax(g, subs);
+x.lo(g, subs) = pMin(g, subs);
+p.up(l,i,j, subs) = dtl(l,i,j,'pmax');
+p.lo(l,i,j, subs) = -dtl(l,i,j,'pmax');
+theta.up(i, subs) = thetamax;
+theta.lo(i, subs) = -thetamax;
+
+
+theta.fx(i, subs) $ [ORD(i) = 1] = 0;
+
+*Model Master_DC_OPF /eMasterFun/
+*Model Sub_DC_OPF /eSubFun, eDemand, ePowerFlow, ePCandFlowHi, ePCandFlowLo, ePCandLimitHi, ePCandLimitLo, ePGenCap, ePGenMin/;
+Model opf /all/;
+option optCR = .001;
+Solve opf using MIP minimizing z;
+
+*$include "OpfOut.INC"
