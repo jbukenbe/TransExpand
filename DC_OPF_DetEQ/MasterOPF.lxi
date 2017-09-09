@@ -1,32 +1,41 @@
 B 2 C o m p i l a t i o n
-B 660 Include File Summary
-B 674 Equation Listing    SOLVE opf Using MIP From line 397
-D 675 eSubFun
-D 869 eDemand
-D 898 ePowerFlow
-D 915 eCandLineFlowHi
-D 932 eCandLineFlowLow
-D 955 eCandCapHi
-D 966 eCandCapLow
-B 985 Column Listing      SOLVE opf Using MIP From line 397
-E 986 z
-E 994 p
-E 1016 theta
-E 1083 x
-E 1105 pns
-E 1124 y
-B 1178 Model Statistics    SOLVE opf Using MIP From line 397
-B 1194 Solution Report     SOLVE opf Using MIP From line 397
-F 1233 eSubFun
-F 1241 eDemand
-F 1336 ePowerFlow
-F 1464 eCandLineFlowHi
-F 2057 eCandLineFlowLow
-F 2650 eCandCapHi
-F 3243 eCandCapLow
-G 3831 z
-G 3837 p
-G 4553 theta
-G 4648 x
-G 4671 pns
-G 4766 y
+B 885 Include File Summary
+B 904 Equation Listing    SOLVE opf Using MIP From line 463
+D 905 eSubFun
+D 1358 eDemand
+D 1405 ePowerFlow
+D 1422 eCandLineFlowHi
+D 1439 eCandLineFlowLow
+D 1462 eCandCapHi
+D 1473 eCandCapLow
+D 1490 eLineLoss
+D 1510 eCandLineLossHi
+D 1524 eCandLineLossLow
+B 1546 Column Listing      SOLVE opf Using MIP From line 463
+E 1547 z
+E 1555 p
+E 1577 theta
+E 2544 x
+E 2566 pns
+E 2585 loss
+E 2694 y
+B 4440 Model Statistics    SOLVE opf Using MIP From line 463
+B 4456 Solution Report     SOLVE opf Using MIP From line 463
+F 4495 eSubFun
+F 4503 eDemand
+F 4778 ePowerFlow
+F 5152 eCandLineFlowHi
+F 6921 eCandLineFlowLow
+F 8690 eCandCapHi
+F 10459 eCandCapLow
+F 12228 eLineLoss
+F 23303 eCandLineLossHi
+F 76228 eCandLineLossLow
+G 129148 z
+G 129154 p
+G 131292 theta
+G 131567 x
+G 131626 pns
+G 131901 loss
+G 134039 y
+B 134247 E x e c u t i o n

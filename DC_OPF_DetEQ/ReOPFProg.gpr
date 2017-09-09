@@ -37,19 +37,19 @@
 1=
 
 [MRUFILES]
-1=\\win.pass.psu.edu\jvb5999\Downloads\Benders_AC_OPF (3).gms
-2=\\win.pass.psu.edu\jvb5999\Downloads\Benders_AC_OPF (2).gms
-3=\\win.pass.psu.edu\jvb5999\Downloads\Benders_AC_OPF.gms
-4=\\win.pass.psu.edu\jvb5999\Downloads\farmerbd3 (2).gms
-5=\\win.pass.psu.edu\jvb5999\Downloads\WECC OPF Model V2.gms
-6=\\win.pass.psu.edu\jvb5999\Downloads\Benders_AC_OPF (1).gms
-7=\\win.pass.psu.edu\jvb5999\Downloads\OPF (3).gms
-8=\\win.pass.psu.edu\jvb5999\Downloads\OPF (2).gms
+1=\\win.pass.psu.edu\jvb5999\Desktop\Research OPF\MasterOPF.lst
+2=\\win.pass.psu.edu\jvb5999\Desktop\Research OPF\MasterOPF.gms
+3=\\win.pass.psu.edu\jvb5999\Downloads\Benders_AC_OPF (3).gms
+4=\\win.pass.psu.edu\jvb5999\Downloads\Benders_AC_OPF (2).gms
+5=\\win.pass.psu.edu\jvb5999\Downloads\Benders_AC_OPF.gms
+6=\\win.pass.psu.edu\jvb5999\Downloads\farmerbd3 (2).gms
+7=\\win.pass.psu.edu\jvb5999\Downloads\WECC OPF Model V2.gms
+8=\\win.pass.psu.edu\jvb5999\Downloads\Benders_AC_OPF (1).gms
 
 [OPENWINDOW_1]
-FILE0=\\win.pass.psu.edu\jvb5999\Desktop\Research OPF\MasterOPF.gms
-FILE1=\\win.pass.psu.edu\jvb5999\Desktop\Research OPF\MasterOPF.lst
-FILE2=\\win.pass.psu.edu\jvb5999\Desktop\Research OPF\MasterOPF.gms
+FILE0=\\win.pass.psu.edu\jvb5999\Documents\GitHub\TransExpand\DC_OPF_DetEQ\MasterOPF.gms
+FILE1=\\win.pass.psu.edu\jvb5999\Documents\GitHub\TransExpand\DC_OPF_DetEQ\MasterOPF.lst
+FILE2=\\win.pass.psu.edu\jvb5999\Documents\GitHub\TransExpand\DC_OPF_DetEQ\MasterOPF.lst
 MAXIM=0
 TOP=8
 LEFT=24
