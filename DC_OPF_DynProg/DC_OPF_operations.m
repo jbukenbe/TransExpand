@@ -8,94 +8,104 @@ function op_cost   = DC_OPF_operations(params, dec_var)
 
 
 %% Data Initialization
-theta_max = params.theta_lim;
+theta_lim = params.theta_lim;
 line_n = sum(dec_var) + params.line.n;
 bus_n = params.bus.n;
 gen_n = params.gen.n;
-m = 2*line_n;
-n = gen_n + 2*bus_n + line_n;
-A = zeros(m, n); 
+cos_n = params.line.loss.n;
 
-%% Initialization of linear program structure
+
+%% Cost Vector
 % Create operating cost segment
-c_op = params.gen.op_cost;
+c_gen = params.gen.op_cost';
 % Create power not served cost segment
-c_pns = params.cpns(ones(bus_n,1));
+c_pns = params.cpns(ones(bus_n,1))';
 % Merge into full cost vector
-c_free = zeros(1, (n-gen_n-bus_n));
-c = [c_op, c_pns, c_free];
+c_theta = zeros(1,bus_n);
+c_loss = zeros(1,line_n);
+c = [c_gen, c_pns, c_theta, c_loss];
 
 
-% Load constraints
-% power not served matrix segment
-A_pns = eye(bus_n);
-
+%% Load constraints
 % generation matrix segment
-A_gen = zeros(bus_n, gen_n);
+A_load_gen = zeros(bus_n, gen_n);
 for g_idx = 1:gen_n
-    A_gen(params.gen.loc(g_idx),g_idx) = 1;
+    A_load_gen(params.gen.loc(g_idx),g_idx) = -1;
 end
 
-% power flow matrix segment
-A_flow = zeros(bus_n)
+% power not served matrix segment
+A_load_pns = -eye(bus_n);
+
+% power flow (theta) matrix segment
+A_load_theta = zeros(bus_n);
 for l_idx = 1:line_n
-    A_flow(params.line.from_to(l_idx,1),l_idx
+    i = params.line.from_to(l_idx,1);
+    j = params.line.from_to(l_idx,2);
+    A_load_theta(i,i) = A_load_theta(i,i) - 1/params.line.imp(l_idx);
+    A_load_theta(i,j) = A_load_theta(i,j) + 1/params.line.imp(l_idx);
+    A_load_theta(j,j) = A_load_theta(j,j) - 1/params.line.imp(l_idx);
+    A_load_theta(j,i) = A_load_theta(j,i) + 1/params.line.imp(l_idx);
 end
 
 % line loss matrix segment
-A_loss = zeros(bus_n, line_n);
+A_load_loss = zeros(bus_n, line_n);
 for l_idx = 1:line_n
-    A_loss(params.line.from_to(l_idx,1),l_idx)= -.5;
-    A_loss(params.line.from_to(l_idx,2),l_idx)= -.5;
+    A_load_loss(params.line.from_to(l_idx,1),l_idx)= .5;
+    A_load_loss(params.line.from_to(l_idx,2),l_idx)= .5;
 end
-
 % b vector
-b_demand = params.bus.load;
+b_load= -params.bus.load;
 
 
+%% Line Loss Constraints
+%generation and pns segments are all zeros
+A_loss_gen = zeros(line_n*cos_n, gen_n);
+A_loss_pns = zeros(line_n*cos_n, bus_n);
 
-
-
-% DC Power flow Constraints
-
-% Line Loss Constraints
-
-
-% Variable upper and lower bounds
-
-
-
-% Transmission Capacity Constraints
-
-PF = zeros(line_n,bus_n);
-for i = 1:line_n
-    PF(i,T(i,1)) = 1/params.line.imp(i);
-    PF(i,T(i,2)) = -1/X(i);
-end      
-A(1:m,gen_n+1:gen_n+bus_n) = cat(1,PF,-PF);
-b = repmat(pmax,2,1);
-
-
-% The system Aeq*x = beq only covers demand constraints
-DRec = zeros(bus);
-for i = 1:line
-    DRec(T(i,1),T(i,2)) =  -133/(X(i));
-    DRec(T(i,2),T(i,1)) =  -133/(X(i));
+%cosine appriximation coefficients
+A_loss_theta = zeros(line_n*cos_n, bus_n);
+b_loss = zeros(line_n*cos_n,1); 
+for l_idx =1:l_idx
+    res = params.line.res;
+    imp = params.line.imp;
+    i = params.line.from_to(l_idx,1);
+    j = params.line.from_to(l_idx,2);
+    for k_idx = 1:cos_n
+        const = params.line.loss.const(k_idx);
+        slope = params.line.loss.slope(k_idx);
+        loss_coef = slope(k_idx)*(imp^2)*(1000/133);
+        a_idx = (l_idx-1)*cos_n+(k_idx-1)+1;
+        A_loss_theta(a_idx, i)=  loss_coef;
+        A_loss_theta(a_idx, j)=  -loss_coef;
+        b_loss(a_idx) = -const+(2*res/(res^2 +imp^2));
+    end
 end
-DRec = DRec - diag(sum(DRec,2));
-Aeq(1:bus,gen_n+1:gen_n+bus) = DRec;
-Aeq(1:bus,gen_n+bus+1:gen_n+2*bus) = eye(bus);
-beq = L;
 
-% The rest is covered by variable bounds
-ub = zeros(1,n); lb = zeros(1,n);
-ub(1:gen_n) = GUp; ub(gen_n+1:gen_n+bus) = theta_max; ub(gen_n+bus+1:end) = inf;
-lb(1:gen_n) = GLo; lb(gen_n+1:gen_n+bus) = -theta_max;
+%loss variable coefficients
+A_loss_loss = -eye(line_n);
+A_loss_loss = repelem(A_loss_loss,1,cos_n);
 
 
+%% Variable upper and lower bounds
+ub_gen = params.gen.pmax;
+ub_pns = ones(1,bus_n)*inf;
+ub_theta = ones(1,bus_n)*theta_lim;
+ub_loss = ones(1,line_n)*inf;
+lb_gen = params.gen.pmin;
+lb_pns = zeros(1,bus_n);
+lb_theta = -ones(1,bus_n)*theta_lim;
+lb_loss = zeros(1,line_n);
 
-%% Solve the program
-[~, op_cost] = linprog(c, A, b, Aeq, beq, lb, ub);
+ub = [ub_gen, ub_pns, ub_theta, ub_loss];
+lb = [lb_gen, lb_pns, lb_theta, lb_loss];
+
+
+%% Problem Solution Phase
+A = [A_load_gen, A_load_pns, A_load_theta, A_load_loss;...
+    A_loss_gen, A_loss_pns, A_loss_theta, A_loss_loss];
+b = [b_load; b_loss];
+
+[~, op_cost] = linprog(c, A, b, lb, ub);
 
 end
 

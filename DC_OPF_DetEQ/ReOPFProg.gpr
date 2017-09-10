@@ -49,7 +49,7 @@
 [OPENWINDOW_1]
 FILE0=\\win.pass.psu.edu\jvb5999\Documents\GitHub\TransExpand\DC_OPF_DetEQ\MasterOPF.gms
 FILE1=\\win.pass.psu.edu\jvb5999\Documents\GitHub\TransExpand\DC_OPF_DetEQ\MasterOPF.lst
-FILE2=\\win.pass.psu.edu\jvb5999\Documents\GitHub\TransExpand\DC_OPF_DetEQ\MasterOPF.lst
+FILE2=\\win.pass.psu.edu\jvb5999\Documents\GitHub\TransExpand\DC_OPF_DetEQ\MasterOPF.gms
 MAXIM=0
 TOP=8
 LEFT=24
