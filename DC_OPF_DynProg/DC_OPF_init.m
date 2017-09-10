@@ -19,7 +19,7 @@ cos_apx_data = importdata('cos_apx_data.txt');
 
 %% Scalor Data
 params.theta_lim = .5;
-params.cpns = 10000;
+params.cpns = 1000;
 params.fix_line_cost = 4;
 params.var_line_cost = 100;
 

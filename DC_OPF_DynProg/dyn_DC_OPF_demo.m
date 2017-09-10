@@ -17,6 +17,7 @@ built_n = sum(params.line.built);
 dec_built = logical(ones(built_n, cand_n));
 dec_new = logical(eye(cand_n));
 dec_lines = [dec_built; dec_new];
+dec_lines = [logical(params.line.y), dec_lines];
 cand_cost = cell(cand_n,1);
 problem.init_time = toc;
 tic;
@@ -27,13 +28,13 @@ params.candidate.from_to = params.line.from_to(dec_lines(:,c_idx),:);
 params.candidate.max_flow = params.line.max_flow(dec_lines(:,c_idx));
 params.candidate.n = sum(params.line.y);
 params.candidate.loss.const = params.line.loss.const;
-params.candidate.loss.slope = params.line.loss.const;
+params.candidate.loss.slope = params.line.loss.slope;
 params.candidate.loss.n = size(params.candidate.loss.slope,1);
 
 
 %% Run Solution in Parallel
 op_cost = cell(params.scen.n,1);
-parfor scen = 1:params.scen.n
+for scen = 1:params.scen.n
     op_cost{scen} = DC_OPF_operations(params, dec_lines(:,c_idx), scen);
 end
 

@@ -57,9 +57,10 @@ eCandCapLow(l,i,j,subs)             Line capacity lower bound in candidate lines
 eLineLoss(l,i,j,k,subs)             Line loss for existing lines
 eCandLineLossHi(l,i,j,k,subs)       Line loss for candidate lines upper bound
 eCandLineLossLow(l,i,j,k,subs)      Line loss for candidate lines lower bound
+etest                               line number test
 ;
 
-eSubFun..                                        z =e= sum(subs, sum(g, pVarCost(g, subs) * x(g, subs)) + sum(i, pns(i, subs) * cpns))/9 +sum((l,i,j)$cand(l,i,j),FixLineCost*y(l,i,j)+ VarLineCost*y(l,i,j)*dtl(l,i,j,'r'));
+eSubFun..                                        z =e= sum(subs, sum(g, pVarCost(g, subs) * x(g, subs)) + sum(i, pns(i, subs) * cpns))/9 + 0*sum((l,i,j)$cand(l,i,j),FixLineCost*y(l,i,j)+ VarLineCost*y(l,i,j)*dtl(l,i,j,'r'));
 eDemand(i, subs)..                                  sum(g$ig(i,g), x(g, subs)) - sum((l,j) $ ii(l,i,j), p(l,i,j,subs)+loss(l,i,j,subs)/2) + sum((l,j) $ ii(l,j,i), p(l,j,i, subs)-loss(l,j,i,subs)/2) =g= pLoad(i, subs) - pns(i, subs);
 ePowerFlow(l,i,j,subs)$(built(l,i,j))..             p(l,i,j, subs) =e= 133*(theta(i, subs) - theta(j, subs)) / (dtl(l,i,j,'x'));
 eCandLineFlowHi(l,i,j,subs)$(cand(l,i,j))..         p(l,i,j, subs) =l= 1000*(1-y(l,i,j))+ 133*(theta(i, subs) - theta(j, subs)) / (dtl(l,i,j,'x'));
@@ -69,12 +70,12 @@ eCandCapLow(l,i,j,subs)$(cand(l,i,j))..             p(l,i,j,subs) =g= -y(l,i,j)*
 eLineLoss(l,i,j,k,subs)$(built(l,i,j))..            loss(l,i,j,subs) =g= ((2*dtl(l,i,j,'r'))/(dtl(l,i,j,'r')**2 + dtl(l,i,j,'x')**2))*((1000/133)*(theta(i,subs) - theta(j,subs)) * ds(k,'m') + ds(k,'n'));
 eCandLineLossHi(l,i,j,k,subs)$(cand(l,i,j))..       loss(l,i,j,subs) =l= 1000*y(l,i,j);
 eCandLineLossLow(l,i,j,k,subs)$(cand(l,i,j))..      loss(l,i,j,subs) =g= -1000*(1-y(l,i,j)) + ((2*dtl(l,i,j,'r'))/(dtl(l,i,j,'r')**2 + dtl(l,i,j,'x')**2))*((1000/133)*(theta(i,subs) - theta(j,subs)) * ds(k,'m') + ds(k,'n'));
-
+etest.. sum((l,i,j)$cand(l,i,j), y(l,i,j)) =l= 5;
 
 
 ii(l,i,j) $ dtl(l,i,j,'pmax') = YES;
 built(l,i,j)$dtl(l,i,j,'current')=YES;
-cand(l,i,j) $dtl(l,i,j,'can')= Yes;
+cand(l,i,j) $dtl(l,i,j,'can')= YES;
 x.up(g, subs) = pMax(g, subs);
 x.lo(g, subs) = pMin(g, subs);
 p.up(l,i,j, subs) = dtl(l,i,j,'pmax');

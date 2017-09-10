@@ -6,7 +6,7 @@ function [op_cost, x]   = DC_OPF_operations(params, dec_lines, scen)
 %Version    Date        Who     Summary
 %1          09/09/2017  JesseB  Initial version updated from old files
 %2          09/10/2017  JesseB  Debugged and finalized, program now works
-
+%3          09/10/2017  JesseB  Added power flow line limits
 
 %% Data Initialization
 theta_lim = params.theta_lim;
@@ -72,13 +72,13 @@ for l_idx =1:l_idx
     i = params.candidate.from_to(l_idx,1);
     j = params.candidate.from_to(l_idx,2);
     for k_idx = 1:cos_n
-        const = params.candidate.loss.const(k_idx);
+        const = params.candidate.loss.const(k_idx)*(2*res(l_idx)/(res(l_idx)^2 +imp(l_idx)^2));
         slope = params.candidate.loss.slope(k_idx);
         loss_coef = slope*(2*res(l_idx)/(res(l_idx)^2 +imp(l_idx)^2))*(1000/133);
         a_idx = (l_idx-1)*cos_n+(k_idx-1)+1;
         A_loss_theta(a_idx, i)=  loss_coef;
         A_loss_theta(a_idx, j)=  -loss_coef;
-        b_loss(a_idx) = const;
+        b_loss(a_idx) = -const;
     end
 end
 
@@ -87,14 +87,35 @@ A_loss_loss = -eye(line_n);
 A_loss_loss = repelem(A_loss_loss,cos_n,1);
 
 
+%% Power Flow Constraints
+%initialize A matrix segments
+%all but A_flow_theta will stay zero
+A_flow_gen = zeros(2*line_n, gen_n);
+A_flow_pns = zeros(2*line_n, bus_n);
+A_flow_loss = zeros(2*line_n, line_n);
+A_flow_theta = zeros(line_n, bus_n);
+
+%create theta segment to power flow A matrix component
+for l_idx = 1:line_n
+    i = params.candidate.from_to(l_idx,1);
+    j = params.candidate.from_to(l_idx,2);
+    A_flow_theta(l_idx, i) = 133/params.candidate.imp(l_idx);
+    A_flow_theta(l_idx, j) = -133/params.candidate.imp(l_idx);    
+end
+A_flow_theta = [A_flow_theta;-A_flow_theta];
+b_flow = [params.candidate.max_flow;params.candidate.max_flow];
+
+
 %% Variable upper and lower bounds
 ub_gen = params.gen.p_max(:,scen)';
 ub_pns = ones(1,bus_n)*inf;
 ub_theta = ones(1,bus_n)*theta_lim;
+ub_theta(1) = 0;
 ub_loss = ones(1,line_n)*inf;
 lb_gen = params.gen.p_min(:,scen)';
 lb_pns = zeros(1,bus_n);
 lb_theta = -ones(1,bus_n)*theta_lim;
+lb_theta(1) = 0;
 lb_loss = zeros(1,line_n);
 
 ub = [ub_gen, ub_pns, ub_theta, ub_loss];
@@ -103,8 +124,9 @@ lb = [lb_gen, lb_pns, lb_theta, lb_loss];
 
 %% Problem Solution Phase
 A = [A_load_gen, A_load_pns, A_load_theta, A_load_loss;...
-    A_loss_gen, A_loss_pns, A_loss_theta, A_loss_loss];
-b = [b_load; b_loss];
+    A_loss_gen, A_loss_pns, A_loss_theta, A_loss_loss;...
+    A_flow_gen, A_flow_pns, A_flow_theta, A_flow_loss];
+b = [b_load; b_loss; b_flow];
 options = optimoptions('linprog','Algorithm','dual-simplex','Display','none','OptimalityTolerance',1.0000e-07);
 [x, op_cost] = linprog(c, A, b,[],[], lb, ub, options);
 
