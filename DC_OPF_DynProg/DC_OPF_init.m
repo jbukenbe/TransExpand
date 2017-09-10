@@ -19,12 +19,13 @@ cos_apx_data = importdata('cos_apx_data.txt');
 
 %% Scalor Data
 params.theta_lim = .5;
-params.cpns = 1000;
+params.cpns = 10000;
 params.fix_line_cost = 4;
 params.var_line_cost = 100;
 
 %% Scenario Initialization
 params.scen.n = size(bus_data.data,2);
+params.scen.p = ones(params.scen.n,1)*1/params.scen.n;
 
 %% Bus Initialization
 params.bus.load = bus_data.data;
