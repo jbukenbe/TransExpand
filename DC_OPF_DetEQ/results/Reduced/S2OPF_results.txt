@@ -1,0 +1,162 @@
+Build Line l
+Line l78        1.00
+Line l79        1.00
+Line l105        1.00
+Generated power [MW]          Generation
+g1                                  203.72
+g2                                   80.00
+g3                                   70.00
+g4                                   10.00
+g5                                   48.48
+g6                                   32.00
+
+
+Power in each node [GW]       Real Generation Load            Angle           Marg. cost      Non-served
+s2
+i1                                203.7215          0.0000          0.0000          2.0000          0.0000
+i2                                 80.0000         50.0000         -0.0562          2.0000          0.0000
+i3                                  0.0000          3.0000         -0.0916          2.0000          0.0000
+i4                                  0.0000         20.0000         -0.1117          2.0000          0.0000
+i5                                 70.0000        140.0000         -0.1537          2.0000          0.0000
+i6                                  0.0000          0.0000         -0.1253          2.0000          0.0000
+i7                                  0.0000         35.0000         -0.1497          2.0000          0.0000
+i8                                 10.0000         40.0000         -0.1343          2.0000          0.0000
+i9                                  0.0000          0.0000         -0.1281          2.0000          0.0000
+i10                                 0.0000          7.0000         -0.1696          2.0000          0.0000
+i11                                48.4785          0.0000         -0.0522          2.0000          0.0000
+i12                                 0.0000         15.0000         -0.1554          2.0000          0.0000
+i13                                32.0000          0.0000         -0.1218          2.0000          0.0000
+i14                                 0.0000          7.0000         -0.1737          2.0000          0.0000
+i15                                 0.0000          8.0000         -0.1775          2.0000          0.0000
+i16                                 0.0000          3.0000         -0.1669          2.0000          0.0000
+i17                                 0.0000         11.0000         -0.1736          2.0000          0.0000
+i18                                 0.0000          6.0000         -0.1897          2.0000          0.0000
+i19                                 0.0000          8.0000         -0.1911          2.0000          0.0000
+i20                                 0.0000          5.0000         -0.1878          2.0000          0.0000
+i21                                 0.0000         20.0000         -0.1829          2.0000          0.0000
+i22                                 0.0000          0.0000         -0.1836          2.0000          0.0000
+i23                                 0.0000          3.2000         -0.1921          2.0000          0.0000
+i24                                 0.0000          9.0000         -0.2051          2.0000          0.0000
+i25                                 0.0000          0.0000         -0.2382          2.0000          0.0000
+i26                                 0.0000          4.0000         -0.2497          2.0000          0.0000
+i27                                 0.0000          0.0000         -0.2530          2.0000          0.0000
+i28                                 0.0000          0.0000         -0.1320          2.0000          0.0000
+i29                                 0.0000         30.0000         -0.2995          2.0000          0.0000
+i30                                 0.0000         20.0000         -0.2988          2.0000          0.0000
+
+
+Real Power flows between nodes
+Trans line from i1 to i2 on l1    130.0000
+Trans line from i1 to i3 on l2     73.7215
+Trans line from i2 to i4 on l3     42.5109
+Trans line from i3 to i4 on l4     70.7215
+Trans line from i2 to i5 on l5     65.3918
+Trans line from i2 to i6 on l6     52.0974
+Trans line from i4 to i6 on l7     43.4934
+Trans line from i5 to i7 on l8     -4.6082
+Trans line from i6 to i7 on l9     39.6082
+Trans line from i6 to i8 on l10     28.5215
+Trans line from i6 to i9 on l11      1.7866
+Trans line from i6 to i10 on l12     10.6129
+Trans line from i9 to i11 on l13    -48.4785
+Trans line from i9 to i10 on l14     50.2651
+Trans line from i4 to i12 on l15     22.7107
+Trans line from i12 to i13 on l16    -32.0000
+Trans line from i12 to i14 on l17      9.5152
+Trans line from i12 to i15 on l18     22.5249
+Trans line from i12 to i16 on l19      7.6706
+Trans line from i14 to i15 on l20      2.5152
+Trans line from i16 to i17 on l21      4.6706
+Trans line from i15 to i18 on l22      7.4410
+Trans line from i18 to i19 on l23      1.4410
+Trans line from i19 to i20 on l24     -6.5590
+Trans line from i10 to i20 on l25     11.5590
+Trans line from i10 to i17 on l26      6.3294
+Trans line from i10 to i21 on l27     23.6185
+Trans line from i10 to i22 on l28     12.3711
+Trans line from i21 to i22 on l29      3.6185
+Trans line from i15 to i23 on l30      9.5991
+Trans line from i22 to i24 on l31     15.9896
+Trans line from i23 to i24 on l32      6.3991
+Trans line from i24 to i25 on l33     13.3887
+Trans line from i25 to i26 on l34      4.0000
+Trans line from i25 to i27 on l35      9.3887
+Trans line from i28 to i27 on l36     40.6113
+Trans line from i27 to i29 on l37     14.8948
+Trans line from i27 to i30 on l38     10.1052
+Trans line from i29 to i30 on l39     -0.2104
+Trans line from i8 to i28 on l40     -1.4785
+Trans line from i6 to i28 on l41     15.0617
+Trans line from i1 to i2 on l42      0.0000
+Trans line from i1 to i3 on l43      0.0000
+Trans line from i2 to i4 on l44      0.0000
+Trans line from i3 to i4 on l45      0.0000
+Trans line from i2 to i5 on l46      0.0000
+Trans line from i2 to i6 on l47      0.0000
+Trans line from i4 to i6 on l48      0.0000
+Trans line from i5 to i7 on l49      0.0000
+Trans line from i6 to i7 on l50      0.0000
+Trans line from i6 to i8 on l51      0.0000
+Trans line from i6 to i9 on l52      0.0000
+Trans line from i6 to i10 on l53      0.0000
+Trans line from i9 to i11 on l54      0.0000
+Trans line from i9 to i10 on l55      0.0000
+Trans line from i4 to i12 on l56      0.0000
+Trans line from i12 to i13 on l57      0.0000
+Trans line from i12 to i14 on l58      0.0000
+Trans line from i12 to i15 on l59      0.0000
+Trans line from i12 to i16 on l60      0.0000
+Trans line from i14 to i15 on l61      0.0000
+Trans line from i16 to i17 on l62      0.0000
+Trans line from i15 to i18 on l63      0.0000
+Trans line from i18 to i19 on l64      0.0000
+Trans line from i19 to i20 on l65      0.0000
+Trans line from i10 to i20 on l66      0.0000
+Trans line from i10 to i17 on l67      0.0000
+Trans line from i10 to i21 on l68      0.0000
+Trans line from i10 to i22 on l69      0.0000
+Trans line from i21 to i22 on l70      0.0000
+Trans line from i15 to i23 on l71      0.0000
+Trans line from i22 to i24 on l72      0.0000
+Trans line from i23 to i24 on l73      0.0000
+Trans line from i24 to i25 on l74      0.0000
+Trans line from i25 to i26 on l75      0.0000
+Trans line from i25 to i27 on l76      0.0000
+Trans line from i28 to i27 on l77      0.0000
+Trans line from i27 to i29 on l78     14.8948
+Trans line from i27 to i30 on l79     10.1052
+Trans line from i29 to i30 on l80      0.0000
+Trans line from i8 to i28 on l81      0.0000
+Trans line from i6 to i28 on l82      0.0000
+Trans line from i1 to i4 on l83      0.0000
+Trans line from i1 to i5 on l84      0.0000
+Trans line from i1 to i6 on l85      0.0000
+Trans line from i1 to i7 on l86      0.0000
+Trans line from i1 to i8 on l87      0.0000
+Trans line from i1 to i26 on l88      0.0000
+Trans line from i1 to i28 on l89      0.0000
+Trans line from i2 to i3 on l90      0.0000
+Trans line from i2 to i7 on l91      0.0000
+Trans line from i2 to i8 on l92      0.0000
+Trans line from i2 to i26 on l93      0.0000
+Trans line from i2 to i28 on l94      0.0000
+Trans line from i3 to i5 on l95      0.0000
+Trans line from i3 to i6 on l96      0.0000
+Trans line from i3 to i7 on l97      0.0000
+Trans line from i3 to i8 on l98      0.0000
+Trans line from i3 to i26 on l99      0.0000
+Trans line from i3 to i28 on l100      0.0000
+Trans line from i4 to i5 on l101      0.0000
+Trans line from i4 to i7 on l102      0.0000
+Trans line from i4 to i8 on l103      0.0000
+Trans line from i4 to i26 on l104      0.0000
+Trans line from i4 to i28 on l105     27.0282
+Trans line from i5 to i6 on l106      0.0000
+Trans line from i5 to i8 on l107      0.0000
+Trans line from i5 to i26 on l108      0.0000
+Trans line from i5 to i28 on l109      0.0000
+Trans line from i6 to i26 on l110      0.0000
+Trans line from i7 to i8 on l111      0.0000
+Trans line from i7 to i26 on l112      0.0000
+Trans line from i7 to i28 on l113      0.0000
+Trans line from i8 to i26 on l114      0.0000
