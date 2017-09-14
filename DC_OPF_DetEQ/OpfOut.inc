@@ -1,6 +1,10 @@
 FILE OPF_RES/ OPF_results.txt /;
 PUT OPF_RES;
 
+PUT 'Solution Value'; 
+PUT /
+PUT z.l;
+PUT //
 PUT 'Build Line l';
 PUT /
 LOOP(l,
@@ -34,7 +38,7 @@ PUT /;
 PUT /;
 
 PUT 'Power in each node [GW]':30;
-PUT 'Real Generation ':16;
+PUT 'Real Generation ':22;
 PUT 'Load ':16;
 PUT 'Angle ':16;
 PUT 'Marg. cost ':16;
@@ -77,12 +81,16 @@ PUT /;
 PUT /;
 PUT 'Power losses [GW]               aprox     real':60;
 PUT /;
-LOOP(i,
-   LOOP(j $ ii(i,j),
-      PUT 'Trans line from ' i.TL:0 ' to ' PUT j.TL:0
-      PUT l.l(i,j):14:5;
-      PUT (2 * [dtl(i,j,'r')/ (dtl(i,j,'r')**2 + dtl(i,j,'x')**2)]* [1-COS(theta.l(i) - theta.l(j))]):12:5
-      PUT /;
-   );
+LOOP(l,
+	LOOP(i,
+   		LOOP(j $ ii(l,i,j),
+      		PUT 'Trans line ' l.TL:0 ' from ' i.TL:0 ' to ' PUT j.TL:0
+			LOOP(subs,
+      			PUT loss.l(l,i,j, subs):14:5;
+      			PUT (2 * [dtl(l,i,j,'r')/ (dtl(l,i,j,'r')**2 + dtl(l,i,j,'x')**2)]* [1-COS(theta.l(i, subs) - theta.l(j, subs))]):12:5
+      			PUT /;
+			);
+   		);
+	);
 );
 $offtext

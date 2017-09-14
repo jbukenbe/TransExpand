@@ -1,11 +1,32 @@
-$include        "30Bus.inc"
+$ontext
+This model solves the transmission expansion plan that minimizes the cost of the
+DC OPF model for the IEEE 30-Bus test case.
 
-SET subs(s)                Active Scenarios        /s1*s3/;
+Options:
+         Active Scenarios: Choose which scenarios to include in analysis e.g. /s2/ or /s1*s3/ etc...
+
+
+History
+Version__Date____________Who_____Summary
+1        09/07/2017      JesseB  Initial Model
+2        09/08/2017      JesseB  Added line loss estimations
+
+
+TO DO:
+Tune scenarios for more interesting results and better comparison to DP
+
+$offtext
+
+
+$include        "30Busmod.inc"
+
+SET subs(s)      Active Scenarios        /s1*s9/;
 
 SCALARS
-ThetaMax   maximum value of theta [radians] /.5/
-cpns       Cost of non-served power         /1000/
-LineCost   Cost to build new Line           /10/
+ThetaMax         Maximum value of theta [radians] /.5/
+cpns             Cost of non-served power         /1000/
+VarLineCost      Cost of new line per estimated distance /100/
+FixLineCost      Fixed cost to build new Line           /.1/
 ;
 
 
@@ -36,9 +57,10 @@ eCandCapLow(l,i,j,subs)             Line capacity lower bound in candidate lines
 eLineLoss(l,i,j,k,subs)             Line loss for existing lines
 eCandLineLossHi(l,i,j,k,subs)       Line loss for candidate lines upper bound
 eCandLineLossLow(l,i,j,k,subs)      Line loss for candidate lines lower bound
+etest                               line number test
 ;
 
-eSubFun..                                        z =e= sum(subs, sum(g, pVarCost(g, subs) * x(g, subs)) + sum(i, pns(i, subs) * cpns))/1 +sum((l,i,j)$cand(l,i,j),y(l,i,j)+ LineCost*y(l,i,j)*dtl(l,i,j,'r'));
+eSubFun..                                        z =e= sum(subs, sum(g, pVarCost(g, subs) * x(g, subs)) + sum(i, pns(i, subs) * cpns))/sum(subs,1) + sum((l,i,j)$cand(l,i,j),FixLineCost*y(l,i,j)*dtl(l,i,j,'pmax')+ VarLineCost*y(l,i,j)*dtl(l,i,j,'r'));
 eDemand(i, subs)..                                  sum(g$ig(i,g), x(g, subs)) - sum((l,j) $ ii(l,i,j), p(l,i,j,subs)+loss(l,i,j,subs)/2) + sum((l,j) $ ii(l,j,i), p(l,j,i, subs)-loss(l,j,i,subs)/2) =g= pLoad(i, subs) - pns(i, subs);
 ePowerFlow(l,i,j,subs)$(built(l,i,j))..             p(l,i,j, subs) =e= 133*(theta(i, subs) - theta(j, subs)) / (dtl(l,i,j,'x'));
 eCandLineFlowHi(l,i,j,subs)$(cand(l,i,j))..         p(l,i,j, subs) =l= 1000*(1-y(l,i,j))+ 133*(theta(i, subs) - theta(j, subs)) / (dtl(l,i,j,'x'));
@@ -48,12 +70,12 @@ eCandCapLow(l,i,j,subs)$(cand(l,i,j))..             p(l,i,j,subs) =g= -y(l,i,j)*
 eLineLoss(l,i,j,k,subs)$(built(l,i,j))..            loss(l,i,j,subs) =g= ((2*dtl(l,i,j,'r'))/(dtl(l,i,j,'r')**2 + dtl(l,i,j,'x')**2))*((1000/133)*(theta(i,subs) - theta(j,subs)) * ds(k,'m') + ds(k,'n'));
 eCandLineLossHi(l,i,j,k,subs)$(cand(l,i,j))..       loss(l,i,j,subs) =l= 1000*y(l,i,j);
 eCandLineLossLow(l,i,j,k,subs)$(cand(l,i,j))..      loss(l,i,j,subs) =g= -1000*(1-y(l,i,j)) + ((2*dtl(l,i,j,'r'))/(dtl(l,i,j,'r')**2 + dtl(l,i,j,'x')**2))*((1000/133)*(theta(i,subs) - theta(j,subs)) * ds(k,'m') + ds(k,'n'));
-
+etest..                                             sum((l,i,j)$cand(l,i,j), y(l,i,j)) =l= 30;
 
 
 ii(l,i,j) $ dtl(l,i,j,'pmax') = YES;
 built(l,i,j)$dtl(l,i,j,'current')=YES;
-cand(l,i,j) $dtl(l,i,j,'can')= Yes;
+cand(l,i,j) $dtl(l,i,j,'can')= YES;
 x.up(g, subs) = pMax(g, subs);
 x.lo(g, subs) = pMin(g, subs);
 p.up(l,i,j, subs) = dtl(l,i,j,'pmax');
@@ -68,6 +90,7 @@ theta.fx(i, subs) $ [ORD(i) = 1] = 0;
 *Model Sub_DC_OPF /eSubFun, eDemand, ePowerFlow, ePCandFlowHi, ePCandFlowLo, ePCandLimitHi, ePCandLimitLo, ePGenCap, ePGenMin/;
 Model opf /all/;
 option optCR = .001;
+option ResLim = 2000; 
 Solve opf using MIP minimizing z;
 
-*$include "OpfOut.INC"
+$include "OpfOut.INC"
