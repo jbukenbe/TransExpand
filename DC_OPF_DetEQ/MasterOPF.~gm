@@ -25,8 +25,8 @@ SET subs(s)      Active Scenarios        /s1*s9/;
 SCALARS
 ThetaMax         Maximum value of theta [radians] /.5/
 cpns             Cost of non-served power         /1000/
-VarLineCost      Cost of new line per estimated distance /10/
-FixLineCost      Fixed cost to build new Line           /.2/
+VarLineCost      Cost of new line per estimated distance /100/
+FixLineCost      Fixed cost to build new Line           /.1/
 ;
 
 
@@ -54,9 +54,9 @@ eCandLineFlowHi(l,i,j,subs)         DC power flow upper bound in candidate lines
 eCandLineFlowLow(l,i,j,subs)        DC power flow lower bound in candidate lines
 eCandCapHi(l,i,j,subs)              Line capacity upper bound in candidate lines
 eCandCapLow(l,i,j,subs)             Line capacity lower bound in candidate lines
-*eLineLoss(l,i,j,k,subs)             Line loss for existing lines
-*eCandLineLossHi(l,i,j,k,subs)       Line loss for candidate lines upper bound
-*eCandLineLossLow(l,i,j,k,subs)      Line loss for candidate lines lower bound
+eLineLoss(l,i,j,k,subs)             Line loss for existing lines
+eCandLineLossHi(l,i,j,k,subs)       Line loss for candidate lines upper bound
+eCandLineLossLow(l,i,j,k,subs)      Line loss for candidate lines lower bound
 etest                               line number test
 ;
 
@@ -67,9 +67,9 @@ eCandLineFlowHi(l,i,j,subs)$(cand(l,i,j))..         p(l,i,j, subs) =l= 1000*(1-y
 eCandLineFlowLow(l,i,j,subs)$(cand(l,i,j))..        p(l,i,j, subs) =g= -1000*(1-y(l,i,j))+ 133*(theta(i, subs) - theta(j, subs)) / (dtl(l,i,j,'x'));
 eCandCapHi(l,i,j,subs)$(cand(l,i,j))..              p(l,i,j,subs) =l= y(l,i,j)*dtl(l,i,j,'pmax');
 eCandCapLow(l,i,j,subs)$(cand(l,i,j))..             p(l,i,j,subs) =g= -y(l,i,j)*dtl(l,i,j,'pmax');
-*eLineLoss(l,i,j,k,subs)$(built(l,i,j))..            loss(l,i,j,subs) =g= ((2*dtl(l,i,j,'r'))/(dtl(l,i,j,'r')**2 + dtl(l,i,j,'x')**2))*((1000/133)*(theta(i,subs) - theta(j,subs)) * ds(k,'m') + ds(k,'n'));
-*eCandLineLossHi(l,i,j,k,subs)$(cand(l,i,j))..       loss(l,i,j,subs) =l= 1000*y(l,i,j);
-*eCandLineLossLow(l,i,j,k,subs)$(cand(l,i,j))..      loss(l,i,j,subs) =g= -1000*(1-y(l,i,j)) + ((2*dtl(l,i,j,'r'))/(dtl(l,i,j,'r')**2 + dtl(l,i,j,'x')**2))*((1000/133)*(theta(i,subs) - theta(j,subs)) * ds(k,'m') + ds(k,'n'));
+eLineLoss(l,i,j,k,subs)$(built(l,i,j))..            loss(l,i,j,subs) =g= ((2*dtl(l,i,j,'r'))/(dtl(l,i,j,'r')**2 + dtl(l,i,j,'x')**2))*((1000/133)*(theta(i,subs) - theta(j,subs)) * ds(k,'m') + ds(k,'n'));
+eCandLineLossHi(l,i,j,k,subs)$(cand(l,i,j))..       loss(l,i,j,subs) =l= 1000*y(l,i,j);
+eCandLineLossLow(l,i,j,k,subs)$(cand(l,i,j))..      loss(l,i,j,subs) =g= -1000*(1-y(l,i,j)) + ((2*dtl(l,i,j,'r'))/(dtl(l,i,j,'r')**2 + dtl(l,i,j,'x')**2))*((1000/133)*(theta(i,subs) - theta(j,subs)) * ds(k,'m') + ds(k,'n'));
 etest..                                             sum((l,i,j)$cand(l,i,j), y(l,i,j)) =l= 30;
 
 
@@ -89,7 +89,7 @@ theta.fx(i, subs) $ [ORD(i) = 1] = 0;
 *Model Master_DC_OPF /eMasterFun/
 *Model Sub_DC_OPF /eSubFun, eDemand, ePowerFlow, ePCandFlowHi, ePCandFlowLo, ePCandLimitHi, ePCandLimitLo, ePGenCap, ePGenMin/;
 Model opf /all/;
-option optCR = .001;
-Solve opf using MIP minimizing z;
+option optCR = .0005;
+Solve opf using RMIP minimizing z;
 
 $include "OpfOut.INC"
