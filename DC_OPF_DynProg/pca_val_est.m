@@ -3,6 +3,10 @@ function problem = pca_val_est(problem)
 % principal component analysis to make estimates of the value of future
 % plans 
 
+%History            
+%Version    Date        Who     Summary
+%1          09/17/2017  JesseB  Initial Version
+
 plan_log = zeros(30,10);
 all_plan = de2bi(problem.plan_id-1, problem.params.cand.n);
 ordering = randperm(1024)';
@@ -14,7 +18,6 @@ for t_idx = 1:10
 A = [val,plan];
 Amean = mean(A);
 Astd = std(A)+eps;
-
 A_stand = (A-Amean)./Astd;
 
 [eiganvectors,~, eiganvalues] = pca(A_stand);
@@ -29,8 +32,8 @@ ylabel('True Value')
 
 [~, plan_id] = sort(val_est);
 plan_log(:,t_idx) = problem.cand_cost(plan_id(1:30));
-val = vertcat(val,problem.cand_cost(plan_id(1:30)));
-plan = vertcat(plan,all_plan(plan_id(1:30),:));
+val = problem.cand_cost(plan_id(1:30));
+plan = all_plan(plan_id(1:30),:);
 
 end
     me(t_idx) = mean(plan_log);
