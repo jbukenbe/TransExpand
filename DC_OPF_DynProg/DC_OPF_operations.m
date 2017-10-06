@@ -40,19 +40,19 @@ A_load_pns = -eye(bus_n);
 % power flow (theta) matrix segment
 A_load_theta = zeros(bus_n);
 for l_idx = 1:line_n
-    i = params.candidate.from_to(l_idx,1);
-    j = params.candidate.from_to(l_idx,2);
-    A_load_theta(i,i) = A_load_theta(i,i) - 133/params.candidate.imp(l_idx);
-    A_load_theta(i,j) = A_load_theta(i,j) + 133/params.candidate.imp(l_idx);
-    A_load_theta(j,j) = A_load_theta(j,j) - 133/params.candidate.imp(l_idx);
-    A_load_theta(j,i) = A_load_theta(j,i) + 133/params.candidate.imp(l_idx);
+    i = params.cand.from_to(l_idx,1);
+    j = params.cand.from_to(l_idx,2);
+    A_load_theta(i,i) = A_load_theta(i,i) - 133/params.cand.imp(l_idx);
+    A_load_theta(i,j) = A_load_theta(i,j) + 133/params.cand.imp(l_idx);
+    A_load_theta(j,j) = A_load_theta(j,j) - 133/params.cand.imp(l_idx);
+    A_load_theta(j,i) = A_load_theta(j,i) + 133/params.cand.imp(l_idx);
 end
 
 % line loss matrix segment
 A_load_loss = zeros(bus_n, line_n);
 for l_idx = 1:line_n
-    A_load_loss(params.candidate.from_to(l_idx,1),l_idx)= .5;
-    A_load_loss(params.candidate.from_to(l_idx,2),l_idx)= .5;
+    A_load_loss(params.cand.from_to(l_idx,1),l_idx)= .5;
+    A_load_loss(params.cand.from_to(l_idx,2),l_idx)= .5;
 end
 % b vector
 b_load= -params.bus.load(:,scen);
@@ -67,13 +67,13 @@ A_loss_pns = zeros(line_n*cos_n, bus_n);
 A_loss_theta = zeros(line_n*cos_n, bus_n);
 b_loss = zeros(line_n*cos_n,1); 
 for l_idx =1:l_idx
-    res = params.candidate.res;
-    imp = params.candidate.imp;
-    i = params.candidate.from_to(l_idx,1);
-    j = params.candidate.from_to(l_idx,2);
+    res = params.cand.res;
+    imp = params.cand.imp;
+    i = params.cand.from_to(l_idx,1);
+    j = params.cand.from_to(l_idx,2);
     for k_idx = 1:cos_n
-        const = params.candidate.loss.const(k_idx)*(2*res(l_idx)/(res(l_idx)^2 +imp(l_idx)^2));
-        slope = params.candidate.loss.slope(k_idx);
+        const = params.line.loss.const(k_idx)*(2*res(l_idx)/(res(l_idx)^2 +imp(l_idx)^2));
+        slope = params.line.loss.slope(k_idx);
         loss_coef = slope*(2*res(l_idx)/(res(l_idx)^2 +imp(l_idx)^2))*(1000/133);
         a_idx = (l_idx-1)*cos_n+(k_idx-1)+1;
         A_loss_theta(a_idx, i)=  loss_coef;
@@ -97,13 +97,13 @@ A_flow_theta = zeros(line_n, bus_n);
 
 %create theta segment to power flow A matrix component
 for l_idx = 1:line_n
-    i = params.candidate.from_to(l_idx,1);
-    j = params.candidate.from_to(l_idx,2);
-    A_flow_theta(l_idx, i) = 133/params.candidate.imp(l_idx);
-    A_flow_theta(l_idx, j) = -133/params.candidate.imp(l_idx);    
+    i = params.cand.from_to(l_idx,1);
+    j = params.cand.from_to(l_idx,2);
+    A_flow_theta(l_idx, i) = 133/params.cand.imp(l_idx);
+    A_flow_theta(l_idx, j) = -133/params.cand.imp(l_idx);    
 end
 A_flow_theta = [A_flow_theta;-A_flow_theta];
-b_flow = [params.candidate.max_flow;params.candidate.max_flow];
+b_flow = [params.cand.max_flow;params.cand.max_flow];
 
 
 %% Variable upper and lower bounds
