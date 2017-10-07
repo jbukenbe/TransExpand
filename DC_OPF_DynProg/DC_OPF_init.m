@@ -17,7 +17,15 @@ line_data = importdata('line_data.txt');
 cos_apx_data = importdata('cos_apx_data.txt');
 
 
-%% Scalor Data
+%% PLS Data
+params.interaction = 1;
+params.initial_samp_n = 30;
+params.inform_sample_n = 20;
+params.explore_sample_n = 10;
+params.stop_err = .01;
+params.n_comp = 10;
+
+%% Scalor Optimization Data
 params.theta_lim = .5;
 params.cpns = 1000;
 params.fix_line_cost = 4;
