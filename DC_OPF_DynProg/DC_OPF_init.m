@@ -5,7 +5,8 @@ function params = DC_OPF_init()
 %History            
 %Version    Date        Who     Summary
 %1          09/09/2017  JesseB  Initial Version
-
+%2          10/07/2017  JesseB  Added PLS regression parameters
+%3          10/08/2017  JesseB  Added line cost data
 
 %% Read GAMS Data
 bus_data = importdata('bus_data.txt');
@@ -48,9 +49,9 @@ params.gen.op_cost = gen_price_data.data;
 params.gen.n = size(params.gen.loc,1);
 
 %% Line Initialization
+params.line.cost = line_data.data(:,8);
 params.line.built = line_data.data(:,7);
 params.line.cand = line_data.data(:,6);
-params.line.y = line_data.data(:,7);
 params.line.full = line_data.data(:,6) + line_data.data(:,7);
 params.line.res = line_data.data(:,3);
 params.line.imp = line_data.data(:,4);
