@@ -20,8 +20,8 @@ tic;
 params = DC_OPF_init;
 
 % select candidate lines to include in analysis TODO
-%y_var = [51 52 53 55 57 60 62 64 68 69 72 75 82 92 94 96 98 100 118 131]';
-y_var = [51 52 53 55 57 72 75 82 118 131]';
+y_var = [51 52 53 55 57 60 62 64 68 69 72 75 82 92 94 96 98 100 118 131]';
+%y_var = [51 52 53 55 57 72 75 82 118 131]';
 
 % load relavant line costs
 params.new_line_cost = params.line.cost(y_var);
@@ -97,6 +97,7 @@ plan_id(samp_id) = par_plan_id;
     problem.cand_op_cost = cell2mat(cand_op_cost);
     problem.cand_full_cost = cell2mat(cand_full_cost);
     problem.plan_id = cell2mat(plan_id);
+    
 % calculate improvement of plans
     [new_best_val, best_plan_id] = min(problem.cand_full_cost);
     err = (cur_best_val - new_best_val)/new_best_val;

@@ -20,10 +20,10 @@ cos_apx_data = importdata('cos_apx_data.txt');
 
 %% PLS Data
 params.interaction = 1;
-params.initial_samp_n = 1000;
+params.initial_samp_n = 80;
 params.inform_sample_n = 20;
-params.explore_sample_n = 10;
-params.stop_err = .01;
+params.explore_sample_n = 50;
+params.stop_err = .001;
 params.n_comp = 10;
 
 %% Scalor Optimization Data

@@ -40,9 +40,15 @@ end
 % Adjust beta for line cost
 beta_full = beta_op;
 beta_full(2:n_line+1) = beta_op(2:n_line+1) + c_line./2;
+%beta_line_sort = sort(beta_full(2:n_line+1));
+%beta_full(2:n_line+1) = beta_full(2:n_line+1)- beta_line_sort(15)*.99;
 
 % Extract inform_sample_n new plans from regression and explore_sample_n plans randomly 
-n_pls_plan = problem.params.inform_sample_n;
+n_pls_plan =50000;
+x_fit_id = randperm(2^n_line,n_pls_plan)-1;
+x_fit = de2bi(x_fit_id,n_line);
+x_fit = (x_fit - .5).*2;
+%{
 good_lines = beta_full(2:n_line+1)' < 0;
 good_lines = (good_lines-.5).*2;
 new_inform_plans = good_lines(ones(n_pls_plan,1),:);
@@ -50,13 +56,27 @@ new_inform_plans = good_lines(ones(n_pls_plan,1),:);
 plan_flip = -de2bi(0:(n_pls_plan-1),n_line);
 plan_flip = plan_flip(:,line_rank);
 plan_flip = (plan_flip+.5).*2;
+x_fit = new_inform_plans.*plan_flip;
+%}
 
-new_inform_plans = bi2de((new_inform_plans.*plan_flip+1)/2)+1;
+% Get Sample fits for new plans
+
+if use_int
+    for l_idx = 1:(n_line-1)
+        x_fit = horzcat(x_fit,x_fit(:,l_idx).*x_fit(:,(l_idx+1):n_line));    
+    end
+end
+y_op_fit = [ones(size(x_fit,1),1), x_fit]*beta_op;
+y_op_fit = y_op_fit + x_fit(:,1:n_line)*c_line;
+y_full_fit = [ones(size(x_fit,1),1), x_fit]*beta_full;
+[~,fit_rank]=sort(y_op_fit);
+new_inform_plans = x_fit(fit_rank(1:problem.params.inform_sample_n),1:n_line);
+
+new_inform_plans = bi2de((new_inform_plans+1)/2)+1;
 
 new_explore_plans = randperm(2^n_line,problem.params.explore_sample_n)';
 %% Output
-problem.new_plan_id = [new_inform_plans; new_explore_plans];
-
+problem.new_plan_id = setdiff([new_inform_plans; new_explore_plans], problem.plan_id);
 
 %% Plotting in debug
 
