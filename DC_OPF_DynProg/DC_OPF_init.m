@@ -19,7 +19,7 @@ cos_apx_data = importdata('cos_apx_data.txt');
 
 
 %% PLS Data
-params.interaction = 1;
+params.interaction = 0;
 params.initial_samp_n = 50;
 params.inform_sample_n = 20;
 params.explore_sample_n = 50;

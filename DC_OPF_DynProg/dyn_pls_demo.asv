@@ -21,7 +21,7 @@ tic;
 params = DC_OPF_init;
 
 % select candidate lines to include in analysis TODO
-%y_var = [51 52 53 55 57 60 62 63 64 65 68 69 72 75 82 84 85 86 92 94 96 98 100 118 131]';
+y_var = [51 52 53 55 57 60 62 63 64 65 68 69 72 75 82 84 85 86 92 94 96 98 100 118 131]';
 %y_var = [51 52 53 55 57 60 62 64 68 69 72 75 82 92 94 96 98 100 118 131]';
 %y_var = [51 52 53 55 57 60 62 64 69 72 75 82 94 118 131]';
 %y_var = [51 52 53 55 57 72 75 82 118 131]';
@@ -44,7 +44,7 @@ problem.plan_id = [];
 
 % make initial sample of plans
 %samp_id = randperm(plan_n,params.initial_samp_n)';
-samp_id = fraction_fact_samp(params, cand_n);
+samp_id = fraction_fact_samp(cand_n);
 samp_size = length(samp_id);
 par_scen_op_cost = cell(samp_size, params.scen.n);
 par_cand_op_cost = cell(samp_size, 1);
