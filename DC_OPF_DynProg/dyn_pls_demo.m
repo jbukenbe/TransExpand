@@ -9,6 +9,7 @@ function problem = dyn_pls_demo()
 %2          10/07/2017  JesseB  Implimented initial sample and pls search
 %3          10/08/2017  JesseB  Added line costs
 %4          10/08/2017  JesseB  Updated for parallel plan solutions
+%5          10/09/2017  JesseB  Fractional Factorial initial sample
 
 % To Do: separate optimization parameters from pls parameters      
 %           Stop hardcoded line inclusion
@@ -21,6 +22,7 @@ params = DC_OPF_init;
 
 % select candidate lines to include in analysis TODO
 y_var = [51 52 53 55 57 60 62 64 68 69 72 75 82 92 94 96 98 100 118 131]';
+%y_var = [51 52 53 55 57 60 62 64 69 72 75 82 94 118 131]';
 %y_var = [51 52 53 55 57 72 75 82 118 131]';
 
 % load relavant line costs
@@ -33,14 +35,15 @@ cand_n = sum(y_var>0);
 params.cand.n = cand_n;
 plan_n = 2^cand_n;
 dec_built = logical(params.line.built);
-scen_op_cost = cell(plan_n, params.scen.n);
-cand_op_cost = cell(plan_n, 1);
-cand_full_cost = cell(plan_n,1);
-plan_id = cell(plan_n,1);
+problem.scen_op_cost = [];
+problem.cand_op_cost = [];
+problem.cand_full_cost = [];
+problem.plan_id = [];
 
 
 % make initial sample of plans
-samp_id = randperm(plan_n,params.initial_samp_n)';
+%samp_id = randperm(plan_n,params.initial_samp_n)';
+samp_id = fraction_fact_samp(cand_n);
 samp_size = length(samp_id);
 par_scen_op_cost = cell(samp_size, params.scen.n);
 par_cand_op_cost = cell(samp_size, 1);
@@ -84,19 +87,13 @@ while err > params.stop_err
         par_cand_full_cost{c_idx} = par_cand_op_cost{c_idx} + sum(par_params.line.cost(new_line_idx));
         par_plan_id{c_idx} = samp_id(c_idx);
     end
-    
-scen_op_cost(samp_id,:) = par_scen_op_cost;
-cand_op_cost(samp_id) = par_cand_op_cost;
-cand_full_cost(samp_id) = par_cand_full_cost;
-plan_id(samp_id) = par_plan_id;
-    
-    
+        
 %% Run PLS Search for new plans
 % write data to problem structure to pass to pls estimator
-    problem.scen_op_cost = cell2mat(scen_op_cost);
-    problem.cand_op_cost = cell2mat(cand_op_cost);
-    problem.cand_full_cost = cell2mat(cand_full_cost);
-    problem.plan_id = cell2mat(plan_id);
+    problem.scen_op_cost = [problem.scen_op_cost;cell2mat(par_scen_op_cost)];
+    problem.cand_op_cost = [problem.cand_op_cost;cell2mat(par_cand_op_cost)];
+    problem.cand_full_cost = [problem.cand_full_cost;cell2mat(par_cand_full_cost)];
+    problem.plan_id = [problem.plan_id;cell2mat(par_plan_id)];
     
 % calculate improvement of plans
     [new_best_val, best_plan_id] = min(problem.cand_full_cost);
