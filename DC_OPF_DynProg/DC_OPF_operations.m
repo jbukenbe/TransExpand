@@ -7,7 +7,7 @@ function [op_cost, x]   = DC_OPF_operations(params, dec_lines, scen)
 %1          09/09/2017  JesseB  Initial version updated from old files
 %2          09/10/2017  JesseB  Debugged and finalized, program now works
 %3          09/10/2017  JesseB  Added power flow line limits
-%4	    11/01/2017  JesseB  Backward Compatable with m2016 for HPC
+%4          11/01/2017  JesseB  Backward Compatable with m2016 for HPC
 
 %% Data Initialization
 theta_lim = params.theta_lim;
