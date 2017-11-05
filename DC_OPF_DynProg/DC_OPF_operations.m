@@ -7,6 +7,7 @@ function [op_cost, x]   = DC_OPF_operations(params, dec_lines, scen)
 %1          09/09/2017  JesseB  Initial version updated from old files
 %2          09/10/2017  JesseB  Debugged and finalized, program now works
 %3          09/10/2017  JesseB  Added power flow line limits
+%4          11/01/2017  JesseB  Backward Compatable with m2016 for HPC
 
 %% Data Initialization
 theta_lim = params.theta_lim;
@@ -128,7 +129,7 @@ A = [A_load_gen, A_load_pns, A_load_theta, A_load_loss;...
     A_flow_gen, A_flow_pns, A_flow_theta, A_flow_loss];
 b = [b_load; b_loss; b_flow];
 options = optimoptions('linprog','Algorithm','dual-simplex','Display','none','OptimalityTolerance',1.0000e-07);
-[x, op_cost] = linprog(c, A, b,[],[], lb, ub, options);
+[x, op_cost] = linprog(c, A, b,[],[], lb, ub,[], options);
 
 end
 

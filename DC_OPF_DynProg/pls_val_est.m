@@ -7,57 +7,90 @@ function problem = pls_val_est(problem)
 %Version    Date        Who     Summary
 %1          10/06/2017  JesseB  Initial Version
 %2          10/07/2017  JesseB  Added simple search for new plans
+%3          10/08/2017  JesseB  Added line costs
+%4          11/04/2017  JesseB  Reworked searching for finding min cost plan
 
 % To Do:    Include Line Costs
 %           Avoid duplicate plans
 
 %% Initialization
 % Extract needed data from problem
-y = problem.cand_cost;
-%c_line = problem.line_cost;
+y = problem.cand_op_cost;
+line_cost = problem.params.new_line_cost;
 x_id = problem.plan_id;
 n_line = problem.params.cand.n;
+n_plans = 2^n_line;
 use_int = problem.params.interaction;
 n_comp = problem.params.n_comp;
+
 % Construct X matrix for regression
-x = de2bi(x_id-1, n_line);
+x_row_n = size(x_id,1);
+x_col_n = n_line;
+if use_int
+    x_col_n = x_col_n*(x_col_n+1)/2;
+end 
+x = zeros(x_row_n, x_col_n);
+x(:,1:n_line) = de2bi(x_id-1, n_line);
 
 % Standardize line data into experimental form -1 = no line 1 = line
-x = (x - .5).*2;
+x(:,1:n_line) = (x(:,1:n_line) - .5).*2;
 
 % Include first order interactions in X matrix
 if use_int
-    for l_idx = 1:(n_line-1)
-        x = horzcat(x,x(:,l_idx).*x(:,(l_idx+1):n_line));    
+    x_col_start = n_line + 1;
+    for l_idx = 1:(n_line-1)        
+        x_col_end = x_col_start + ((n_line-1) - l_idx);
+        x(:,x_col_start:x_col_end) = x(:,l_idx).*x(:,(l_idx+1):n_line);
+        x_col_start = x_col_end + 1;
     end
 end
+
 %% Run PLS regression
-[~, ~, ~, ~, beta, pctvar] = plsregress(x,y,n_comp);
+[~, ~, ~, ~, beta_op, pctvar] = plsregress(x,y,n_comp);
 
 
 %% Post Processing
-% Extract inform_sample_n new plans from regression and explore_sample_n plans randomly 
-n_pls_plan = problem.params.inform_sample_n;
-good_lines = beta(2:n_line+1)' < 0;
-good_lines = (good_lines-.5).*2;
-new_inform_plans = good_lines(ones(n_pls_plan,1),:);
-[~,line_rank]=sort(beta(2:(n_line+1)).^2);
-plan_flip = -de2bi(0:(n_pls_plan-1),n_line);
-plan_flip = plan_flip(:,line_rank);
-plan_flip = (plan_flip+.5).*2;
+% create full matrix of plans for fit estimation
+x_fit = zeros(n_plans, x_col_n);
+x_fit(:,1:n_line) = de2bi(0:(n_plans-1), n_line);
+x_fit(:,1:n_line) = (x_fit(:,1:n_line) - .5).*2;
+if use_int
+    x_col_start = n_line + 1;
+    for l_idx = 1:(n_line-1)
+        x_col_end = x_col_start + ((n_line-1) - l_idx);
+        x_fit(:, x_col_start:x_col_end) = x_fit(:,l_idx).*x_fit(:,(l_idx+1):n_line);
+        x_col_start = x_col_end + 1;
+    end
+end
 
-new_inform_plans = bi2de((new_inform_plans.*plan_flip+1)/2)+1;
+% Get fits for all plans operating costs
+y_fit = [ones(size(x_fit,1),1), x_fit]*beta_op;
+[~,fit_rank]=sort(y_fit);
+plot(problem.real_op(fit_rank(1:100000)))
 
-new_explore_plans = randperm(2^n_line,problem.params.explore_sample_n)';
+% Isolate best plans
+best_op_set = fit_rank(1:2000);
+
+% Calculate line costs for best plans
+plan_line_cost = x_fit(best_op_set,1:n_line)*line_cost;
+
+% Sort by line cost
+[~, best_line_subset] = sort(plan_line_cost);
+best_op_set = best_op_set(best_line_subset);
+
+% Calculate full cost for best sets
+best_full_set = best_op_set(1:500);
+[best_full_val, best_full_subset] = sort(problem.cand_full_cost(best_full_set));
+scatter(1:size(best_full_val,1),best_full_val)
+
 %% Output
-problem.new_plan_id = [new_inform_plans; new_explore_plans];
-
-
+problem.best_plan_id = best_full_set(best_full_subset(1:100));
+problem.best_plan_full_val = best_full_val(1:100); 
 
 %% Plotting in debug
-
-plot(1:n_comp,cumsum(100*pctvar(2,:)),'-bo')
 %{
+plot(1:n_comp,cumsum(100*pctvar(2,:)),'-bo')
+
 x_fit_id = problem.plan_id;
 x_fit = de2bi(x_fit_id-1, n_line);
 x_fit = (x_fit - .5).*2;
@@ -67,9 +100,9 @@ if use_int
     end
 end
 
-y_fit = [ones(size(x_fit,1),1), x_fit]*beta;
+y_fit = [ones(size(x_fit,1),1), x_fit]*beta_op+de2bi(x_fit_id-1, n_line)*c_line;
 figure
-scatter(y_fit, problem.cand_cost);
+scatter(y_fit, problem.cand_op_cost+de2bi(x_fit_id-1, n_line)*c_line);
 xlabel('fitted value'); ylabel('Actual Plan Cost'); title('Example Predictive Power from 300 Sample Plans'); 
 %}
 end
