@@ -1,4 +1,4 @@
-function problem = pls_val_est(problem)
+function [best_plan_full_val, best_plan_id] = pls_val_est(problem)
 % This function takes the problem from the dyn_DC_OPF function and uses
 % Partial Least Squares (also called Projected on Latent Structure) Regression
 % to make estimates of the value of future plans 
@@ -66,10 +66,10 @@ end
 % Get fits for all plans operating costs
 y_fit = [ones(size(x_fit,1),1), x_fit]*beta_op;
 [~,fit_rank]=sort(y_fit);
-plot(problem.real_op(fit_rank(1:100000)))
+%plot(problem.real_op(fit_rank(1:1000000)))
 
 % Isolate best plans
-best_op_set = fit_rank(1:2000);
+best_op_set = fit_rank(1:100000);
 
 % Calculate line costs for best plans
 plan_line_cost = x_fit(best_op_set,1:n_line)*line_cost;
@@ -81,11 +81,11 @@ best_op_set = best_op_set(best_line_subset);
 % Calculate full cost for best sets
 best_full_set = best_op_set(1:500);
 [best_full_val, best_full_subset] = sort(problem.cand_full_cost(best_full_set));
-scatter(1:size(best_full_val,1),best_full_val)
+%scatter(1:size(best_full_val,1),best_full_val)
 
 %% Output
-problem.best_plan_id = best_full_set(best_full_subset(1:100));
-problem.best_plan_full_val = best_full_val(1:100); 
+best_plan_id = best_full_set(best_full_subset(1:100));
+best_plan_full_val = best_full_val(1:100); 
 
 %% Plotting in debug
 %{

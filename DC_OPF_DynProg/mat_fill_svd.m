@@ -15,8 +15,23 @@ Sless(4:end,:)=0;
 SV = Sless*V';
 x = zeros(9,1);
 T_est = zeros(size(T));
+
+
+function xest = grad_dec(A,x,b)
+    err = 2;
+    for n = 1:2000;
+        for idx = 1:3
+            err = b -  A*x;
+            delta =  .00000000013*err(idx).*A(idx,:)';
+            x = x +delta; 
+        end
+    end
+    xest = A*x;
+end
+
+
 for t_idx = 1:length(T)
-    T_est(t_idx,:) = scratch(SV',x,T(t_idx,:)');
+    T_est(t_idx,:) = grad_dec(SV',x,T(t_idx,:)');
 end
 A_fill = [A;T_est];
 
