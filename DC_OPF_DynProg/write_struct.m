@@ -9,9 +9,6 @@ function write_struct(problem)
 
 filename = 'output.mat';
 output = matfile(filename);
-output.plan_id = problem.plan_id;
-output.scen_op_cost = problem.scen_op_cost;
-output.cand_op_cost = problem.cand_op_cost;
-output.cand_full_cost = problem.cand_full_cost;
+output.problem = problem;
 
 end

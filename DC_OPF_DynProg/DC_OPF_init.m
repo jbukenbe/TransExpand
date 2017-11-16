@@ -19,18 +19,18 @@ cos_apx_data = importdata('cos_apx_data.txt');
 
 
 %% PLS Data
-params.interaction = 0;
-params.initial_samp_n = 50;
-params.inform_sample_n = 20;
-params.explore_sample_n = 50;
-params.stop_err = .001;
-params.n_comp = 10;
+params.pls.interaction = 1;
+params.pls.refine_samp_n = 400;
+params.pls.line_samp_n = 5000;
+params.pls.fit_samp_n = 1000000;
+params.pls.n_comp = 10;
 
 %% Scalor Optimization Data
 params.theta_lim = .5;
 params.cpns = 1000;
 params.fix_line_cost = 4;
 params.var_line_cost = 100;
+params.initial_samp_n = 500;
 
 %% Scenario Initialization
 params.scen.n = size(bus_data.data,2);
