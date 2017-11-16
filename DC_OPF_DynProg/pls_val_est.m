@@ -40,7 +40,7 @@ if use_int
     x_col_start = n_line + 1;
     for l_idx = 1:(n_line-1)        
         x_col_end = x_col_start + ((n_line-1) - l_idx);
-        x(:,x_col_start:x_col_end) = x(:,l_idx).*x(:,(l_idx+1):n_line);
+        x(:,x_col_start:x_col_end) = repmat(x(:,l_idx),1,(1+x_col_end-x_col_start)).*x(:,(l_idx+1):n_line);
         x_col_start = x_col_end + 1;
     end
 end
@@ -76,12 +76,12 @@ x_fit = [x_fit', zeros(x_fit_row,x_col_n-n_line)];
 
 
 % convert matrix of plans into experimental form
-x_fit(:,1:n_line) = (x_fit(:,1:n_line) - .5).*2;
+x_fit(:,1:n_line) = (x_fit(:,1:n_line) - .5)*2;
 if use_int
     x_col_start = n_line + 1;
     for l_idx = 1:(n_line-1)
         x_col_end = x_col_start + ((n_line-1) - l_idx);
-        x_fit(:, x_col_start:x_col_end) = x_fit(:,l_idx).*x_fit(:,(l_idx+1):n_line);
+        x_fit(:, x_col_start:x_col_end) = repmat(x_fit(:,l_idx),1,(1+x_col_end-x_col_start)).*x_fit(:,(l_idx+1):n_line);
         x_col_start = x_col_end + 1;
     end
 end
