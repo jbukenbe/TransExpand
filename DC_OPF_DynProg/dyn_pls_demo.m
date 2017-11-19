@@ -21,7 +21,7 @@ function problem = dyn_pls_demo()
 
 
 % select candidate lines to include in analysis TODO
-for run_idx = 1:7
+for run_idx = 9:9
 init_time = tic;
 params = DC_OPF_init;    
 switch run_idx
@@ -53,6 +53,7 @@ params.new_line_cost = params.line.cost(y_var);
 cand_n = sum(y_var>0);
 params.cand.n = cand_n;
 plan_n = 2^cand_n;
+params.plan.n = plan_n;
 params.line.dec_built = logical(params.line.built);
 
 % make initial sample of plans

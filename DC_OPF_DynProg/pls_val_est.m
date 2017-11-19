@@ -10,6 +10,7 @@ function problem = pls_val_est(problem)
 %3          10/08/2017  JesseB  Added line costs
 %4          11/04/2017  JesseB  Reworked searching for finding min cost plan
 %5          11/15/2017  JesseB  Modified to output refined sample for real time search
+%6          11/18/2017  JesseB  Pulled out good fit id picking process for large arrays
 
 % To Do:    Avoid duplicate plans
 
@@ -50,45 +51,11 @@ end
 
 
 %% Post Processing
-% create full matrix of plans for fit estimation
-x_fit_row = 0;
-k = 0;
-fit_samp_n = problem.params.pls.fit_samp_n;
-while fit_samp_n > x_fit_row
-    k = k + 1;
-    x_fit_row = x_fit_row + nchoosek(n_line ,k);
-    if k == n_line
-        fit_samp_n = x_fit_row;
-    end
-end
-x_fit = zeros(x_fit_row, n_line)';
-x_fit_full = 0;
-for k_idx = 1:k
-    line_idx = nchoosek(1:n_line,k_idx);
-    [row_x_fit, col_x_fit] = size(line_idx);
-    x_fit_col = n_line*((1:row_x_fit)' + x_fit_full -1);
-    x_fit_full = x_fit_full + nchoosek(n_line,k_idx);
-    for col_idx = 1:col_x_fit
-        x_fit(line_idx(:,col_idx) + x_fit_col)= 1;
-    end
-end
-x_fit = [x_fit', zeros(x_fit_row,x_col_n-n_line)];
-
-
-% convert matrix of plans into experimental form
-x_fit(:,1:n_line) = (x_fit(:,1:n_line) - .5)*2;
-if use_int
-    x_col_start = n_line + 1;
-    for l_idx = 1:(n_line-1)
-        x_col_end = x_col_start + ((n_line-1) - l_idx);
-        x_fit(:, x_col_start:x_col_end) = repmat(x_fit(:,l_idx),1,(1+x_col_end-x_col_start)).*x_fit(:,(l_idx+1):n_line);
-        x_col_start = x_col_end + 1;
-    end
-end
+good_plan_threshold = min(y)*1.05;
+[x_fit_id, y_fit] = new_samp_from_beta(problem, beta_op, good_plan_threshold);
+x_fit_line = de2bi(x_fit_id-1, n_line);
 
 % Get fits for all plans operating costs
-y_fit = [ones(size(x_fit,1),1), x_fit]*beta_op;
-x_fit_line = (x_fit(:,1:n_line)+1)./2;
 [~,fit_rank]=sort(y_fit);
 plot(y_fit(fit_rank))
 
@@ -129,5 +96,33 @@ figure
 scatter(y_fit, problem.cand_op_cost+de2bi(x_fit_id-1, n_line)*c_line);
 xlabel('fitted value'); ylabel('Actual Plan Cost'); title('Example Predictive Power from 300 Sample Plans'); 
 %}
+
+
+%% line subset picker
+%{
+x_fit_row = 0;
+k = 0;
+fit_samp_n = problem.params.pls.fit_samp_n;
+while fit_samp_n > x_fit_row
+    k = k + 1;
+    x_fit_row = x_fit_row + nchoosek(n_line ,k);
+    if k == n_line
+        fit_samp_n = x_fit_row;
+    end
+end
+x_fit = zeros(x_fit_row, n_line)';
+x_fit_full = 0;
+for k_idx = 1:k
+    line_idx = nchoosek(1:n_line,k_idx);
+    [row_x_fit, col_x_fit] = size(line_idx);
+    x_fit_col = n_line*((1:row_x_fit)' + x_fit_full -1);
+    x_fit_full = x_fit_full + nchoosek(n_line,k_idx);
+    for col_idx = 1:col_x_fit
+        x_fit(line_idx(:,col_idx) + x_fit_col)= 1;
+    end
+end
+x_fit = [x_fit', zeros(x_fit_row,x_col_n-n_line)];
+%}
+
 end
 
