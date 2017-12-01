@@ -21,7 +21,7 @@ function problem = dyn_pls_demo()
 
 
 % select candidate lines to include in analysis TODO
-for run_idx = 9:9
+for run_idx = 1:1
 init_time = tic;
 params = DC_OPF_init;    
 switch run_idx

@@ -98,31 +98,7 @@ xlabel('fitted value'); ylabel('Actual Plan Cost'); title('Example Predictive Po
 %}
 
 
-%% line subset picker
-%{
-x_fit_row = 0;
-k = 0;
-fit_samp_n = problem.params.pls.fit_samp_n;
-while fit_samp_n > x_fit_row
-    k = k + 1;
-    x_fit_row = x_fit_row + nchoosek(n_line ,k);
-    if k == n_line
-        fit_samp_n = x_fit_row;
-    end
-end
-x_fit = zeros(x_fit_row, n_line)';
-x_fit_full = 0;
-for k_idx = 1:k
-    line_idx = nchoosek(1:n_line,k_idx);
-    [row_x_fit, col_x_fit] = size(line_idx);
-    x_fit_col = n_line*((1:row_x_fit)' + x_fit_full -1);
-    x_fit_full = x_fit_full + nchoosek(n_line,k_idx);
-    for col_idx = 1:col_x_fit
-        x_fit(line_idx(:,col_idx) + x_fit_col)= 1;
-    end
-end
-x_fit = [x_fit', zeros(x_fit_row,x_col_n-n_line)];
-%}
+
 
 end
 
