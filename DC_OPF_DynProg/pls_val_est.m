@@ -11,8 +11,8 @@ function problem = pls_val_est(problem)
 %4          11/04/2017  JesseB  Reworked searching for finding min cost plan
 %5          11/15/2017  JesseB  Modified to output refined sample for real time search
 %6          11/18/2017  JesseB  Pulled out good fit id picking process for large arrays
+%7          12/01/2017  JesseB  Tweaked to cope with new search parameters
 
-% To Do:    Avoid duplicate plans
 
 %% Initialization
 % Extract needed data from problem
@@ -20,9 +20,10 @@ y = problem.cand_op_cost;
 line_cost = problem.params.new_line_cost;
 x_id = problem.plan_id;
 n_line = problem.params.cand.n;
-n_plans = 2^n_line;
 use_int = problem.params.pls.interaction;
 n_comp = problem.params.pls.n_comp;
+line_samp_n = problem.params.pls.line_samp_n;
+refine_samp_n = problem.params.pls.refine_samp_n;
 
 % Construct X matrix for regression
 x_row_n = size(x_id,1);
@@ -34,7 +35,7 @@ x = zeros(x_row_n, x_col_n);
 x(:,1:n_line) = de2bi(x_id-1, n_line);
 
 % Standardize line data into experimental form -1 = no line 1 = line
-x(:,1:n_line) = (x(:,1:n_line) - .5).*2;
+%x(:,1:n_line) = (x(:,1:n_line) - .5).*2;
 
 % Include first order interactions in X matrix
 if use_int
@@ -47,12 +48,12 @@ if use_int
 end
 
 %% Run PLS regression
-[~, ~, ~, ~, beta_op, pctvar] = plsregress(x,y,n_comp);
-
+[~, ~, ~, ~, beta_op] = plsregress(x,y,n_comp);
 
 %% Post Processing
+problem.pls.beta = beta_op;
 good_plan_threshold = min(y)*1.05;
-[x_fit_id, y_fit] = new_samp_from_beta(problem, beta_op, good_plan_threshold);
+[x_fit_id, y_fit] = new_samp_from_beta(problem, good_plan_threshold);
 x_fit_line = de2bi(x_fit_id-1, n_line);
 
 % Get fits for all plans operating costs
@@ -60,7 +61,8 @@ x_fit_line = de2bi(x_fit_id-1, n_line);
 plot(y_fit(fit_rank))
 
 % Isolate plans with lowest estimated operating costs
-best_op_set = fit_rank(1:problem.params.pls.line_samp_n);
+line_samp_n = min(line_samp_n,length(y_fit));
+best_op_set = fit_rank(1:line_samp_n);
 
 % Calculate line costs for best plans
 plan_line_cost = x_fit_line(best_op_set,:)*line_cost;
@@ -70,11 +72,11 @@ plan_line_cost = x_fit_line(best_op_set,:)*line_cost;
 best_op_set = best_op_set(best_line_subset);
 
 % Calculate full cost for best sets
-best_full_set = best_op_set(1:problem.params.pls.refine_samp_n);
+refine_samp_n = min(refine_samp_n, length(best_op_set));
+best_full_set = best_op_set(1:refine_samp_n);
 
 
 %% Output
-problem.pls.beta = beta_op;
 problem.samp_id = bi2de(x_fit_line(best_full_set,:))+1;
 
 

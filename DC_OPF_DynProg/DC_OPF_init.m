@@ -22,9 +22,9 @@ cos_apx_data = importdata('cos_apx_data.txt');
 
 %% PLS Data
 params.pls.interaction = 1;
-params.pls.refine_samp_n = 1000;
-params.pls.line_samp_n = 5000;
-params.pls.fit_samp_n = 1000000;
+params.pls.refine_samp_n = 500;
+params.pls.line_samp_n = 4000000;
+params.pls.fit_samp_n = 4000000;
 params.pls.n_comp = 10;
 params.pls.dist_mat_size = 100000;
 
@@ -33,8 +33,9 @@ params.theta_lim = .5;
 params.cpns = 1000;
 params.fix_line_cost = 4;
 params.var_line_cost = 100;
-params.initial_samp_n = 300;
-params.max_new_lines = 24;
+params.initial_samp_n = 500;
+params.max_new_lines = 22;
+params.line_budget = 150;
 
 %% Scenario Initialization
 params.scen.n = size(bus_data.data,2);

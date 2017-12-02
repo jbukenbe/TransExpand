@@ -18,6 +18,14 @@ interact_list = nchoosek(line_id,2);
 beta_map = [0 0;line_id, zeros(size(line_id,1),1);interact_list];
 beta_line_map = [beta, beta_map];
 
+
+for l_idx = 1:length(line_id)
+    line_idx = line_id(l_idx);
+    top_b_logic = beta_line_map(:,2) == line_idx;
+    bot_b_logic = beta_line_map(:,3) == line_idx;
+    line_beta(l_idx) = beta_line_map(:,1)'*(top_b_logic+bot_b_logic);
+end
+
 % find lines to keep and those to drop
 keep_lines = line_find(1, line_beta, line_id, beta_line_map);
 drop_lines = line_find(0, line_beta, line_id, beta_line_map);
