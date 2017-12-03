@@ -1,4 +1,4 @@
-function samp_id = fraction_fact_samp(params)
+function samp = fraction_fact_samp(problem)
 % This function returns the fractional factorial level IV design, so main
 % effects and two way interactions are preserved
 
@@ -7,10 +7,17 @@ function samp_id = fraction_fact_samp(params)
 %1          10/07/2017  JesseB  Initial Version
 %2          12/02/2017  JesseB  Reworked with walsh_index fractional factorial
 
-cand_n = params.cand.n;
-samp_size = params.initial_samp_n;
+cand_n = problem.params.cand.n(problem.z_idx);
+
+if problem.z_idx > 1
+    samp_size = problem.params.refine_samp_n;
+else
+    samp_size = problem.params.initial_samp_n;
+end
+
 hadamard_power = ceil(log(samp_size)/log(2));
 hadamard_size = 2^hadamard_power;
+
 walsh_index = [1 2 4 8 15 16 32 51 64 85 106 128 150 171 219 237 247 256 ...
     279 297 455 512 537 557 597 643 803 863 898 1024 1051 1070 1112 1169 ...
     1333 1345 1620 1866 2048 2076 2085 2185 2372 2456 2618 2800 2873 ...
@@ -23,7 +30,7 @@ walsh_index = [1 2 4 8 15 16 32 51 64 85 106 128 150 171 219 237 247 256 ...
     29577 32705]+1;
 
 walsh_avail = walsh_index(walsh_index < samp_size);
-hadamard_samp = hadamard(hadamard_size);
+hadamard_samp = hadamard(hadamard_size, 'int8');
 if (length(walsh_avail) > cand_n) 
     samp = hadamard_samp(1:(max(walsh_avail)-1),walsh_avail(1:cand_n));
 else
@@ -31,8 +38,8 @@ else
 end
 clear hadamard_samp
 samp = ((samp +1)./2);
-samp_id = bi2de(samp);
-
+samp = uint8(samp);
+samp = samp(:,randperm(cand_n));
 %{
 if params.interaction 
     one_idx = nchoosek(1:cand_n,2);

@@ -16,23 +16,19 @@ function problem = pls_val_est(problem)
 
 %% Initialization
 % Extract needed data from problem
-y = problem.cand_op_cost;
-line_cost = problem.params.new_line_cost;
-x_id = problem.plan_id;
-n_line = problem.params.cand.n;
+z_idx = problem.z_idx;
+y = problem.cand_full_cost(problem.samp_range(1,z_idx):problem.samp_range(2,z_idx));
+x = problem.samp;
+n_line = problem.params.cand.n(z_idx);
 use_int = problem.params.pls.interaction;
 n_comp = problem.params.pls.n_comp;
-line_samp_n = problem.params.pls.line_samp_n;
-refine_samp_n = problem.params.pls.refine_samp_n;
 
 % Construct X matrix for regression
-x_row_n = size(x_id,1);
-x_col_n = n_line;
 if use_int
-    x_col_n = x_col_n*(x_col_n+1)/2;
+    x_row_n = size(x,1);
+    x_col_n = n_line*(n_line-1)/2;
+    x = [x,zeros(x_row_n, x_col_n, 'uint8')];  
 end 
-x = zeros(x_row_n, x_col_n);
-x(:,1:n_line) = de2bi(x_id-1, n_line);
 
 % Standardize line data into experimental form -1 = no line 1 = line
 %x(:,1:n_line) = (x(:,1:n_line) - .5).*2;
@@ -48,59 +44,10 @@ if use_int
 end
 
 %% Run PLS regression
-[~, ~, ~, ~, beta_op] = plsregress(x,y,n_comp);
-
-%% Post Processing
-problem.pls.beta = beta_op;
-problem.pls.good_plan_threshold = min(y)*1.5;
-[x_fit_id, y_fit] = new_samp_from_beta(problem);
-x_fit_line = de2bi(x_fit_id-1, n_line);
-
-% Get fits for all plans operating costs
-%[~,fit_rank]=sort(y_fit);
-%plot(y_fit(fit_rank))
-
-% Isolate plans with lowest estimated operating costs
-%line_samp_n = min(line_samp_n,length(y_fit));
-%best_op_set = fit_rank(1:line_samp_n);
-
-% Calculate line costs for best plans
-%plan_line_cost = x_fit_line(best_op_set,:)*line_cost;
-
-% Sort by line cost
-%[~, best_line_subset] = sort(plan_line_cost);
-%best_op_set = best_op_set(best_line_subset);
-
-% Calculate full cost for best sets
-refine_samp_n = min(refine_samp_n, length(x_fit_id));
-%best_full_set = best_op_set(1:refine_samp_n);
-
+[~, ~, ~, ~, beta] = plsregress(double(x),y,n_comp);
 
 %% Output
-problem.samp_id = bi2de(x_fit_line(1:refine_samp_n,:))+1;
-
-
-%% Plotting in debug
-%{
-plot(1:n_comp,cumsum(100*pctvar(2,:)),'-bo')
-
-x_fit_id = problem.plan_id;
-x_fit = de2bi(x_fit_id-1, n_line);
-x_fit = (x_fit - .5).*2;
-if use_int
-    for l_idx = 1:(n_line-1)
-        x_fit = horzcat(x_fit,x_fit(:,l_idx).*x_fit(:,(l_idx+1):n_line));    
-    end
-end
-
-y_fit = [ones(size(x_fit,1),1), x_fit]*beta_op+de2bi(x_fit_id-1, n_line)*c_line;
-figure
-scatter(y_fit, problem.cand_op_cost+de2bi(x_fit_id-1, n_line)*c_line);
-xlabel('fitted value'); ylabel('Actual Plan Cost'); title('Example Predictive Power from 300 Sample Plans'); 
-%}
-
-
-
+problem.pls.beta{z_idx} = beta;
 
 end
 

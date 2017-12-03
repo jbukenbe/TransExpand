@@ -1,4 +1,4 @@
-function params = DC_OPF_init(problem_size)
+function params = DC_OPF_init(problem)
 % This file initializes the parameters for the DC optimal power flow operations
 % model. It currently initializes the IEEE 30-Bus test case
 
@@ -23,7 +23,6 @@ cos_apx_data = importdata('cos_apx_data.txt');
 
 %% PLS Data
 params.pls.interaction = 1;
-params.pls.refine_samp_n = 200;
 params.pls.line_samp_n = 5000000;
 params.pls.fit_samp_n = 5000000;
 params.pls.n_comp = 10;
@@ -34,9 +33,10 @@ params.theta_lim = .5;
 params.cpns = 1000;
 params.fix_line_cost = 4;
 params.var_line_cost = 100;
-params.initial_samp_n = 150;
 params.max_new_lines = 23;
 params.line_budget = 150;
+params.initial_samp_n = 200;
+params.refine_samp_n = 130;
 
 %% Scenario Initialization
 params.scen.n = size(bus_data.data,2);
@@ -73,7 +73,7 @@ params.line.loss.n = size(params.line.loss.slope,1);
 %% Load Candidate Line Info
 
 % pick candidate line ids
-switch problem_size
+switch problem.problem_size
     case 196
         line_id = (42:237)';
     case 75
@@ -101,9 +101,9 @@ switch problem_size
 end
 
 % write problem specific info based on included lines
-params.cand.line_id = line_id;
-params.new_line_cost = params.line.cost(line_id);
-params.cand.n = sum(line_id>0);
+params.cand.line_id{1} = line_id;
+params.new_line_cost{1} = params.line.cost(line_id);
+params.cand.n = length(line_id);
 params.plan.n = 2^params.cand.n;
-params.line.dec_built = logical(params.line.built);
+params.line.dec_built{1} = logical(params.line.built);
 end

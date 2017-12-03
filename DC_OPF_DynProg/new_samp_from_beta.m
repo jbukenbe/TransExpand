@@ -1,124 +1,43 @@
-function [x_fit_id, y_fit] = new_samp_from_beta(problem)
+function problem = new_samp_from_beta(problem)
 % This function takes the problem structure and a beta vector from a
 % regression and retuns a vector of plan ids with reasonable estimated fit 
 
 %History            
 %Version    Date        Who     Summary
 %1          11/18/2017  JesseB  Initial Version
-%2          11/30/2017  JesseB  Added Line number limit
-%3          11/30/2017  JesseB  Updated rolling best plan matrix
-%4          11/30/2017  JesseB  Start with plans with fewer lines
-%5          12/01/2017  JesseB  Revamped to pick best lines first
-%6          12/02/2017  JesseB  Returns plans with lowest line costs
 
-% initialize data
-beta = problem.pls.beta;
-good_plan_threshold = problem.pls.good_plan_threshold;
-line_id = problem.params.cand.line_id;
-n_line = problem.params.cand.n;
-use_int = problem.params.pls.interaction;
-dist_mat_size = problem.params.pls.dist_mat_size;
-max_new_lines = problem.params.max_new_lines;
-line_cost = problem.params.new_line_cost;
-line_budget = problem.params.line_budget;
-between_cleanup_loop = 12;
-x_fit_id = [];
-line_cost_list = [];
-y_fit = [];
+%% Initialize Data
+z_idx = problem.z_idx;
+line_id = problem.params.cand.line_id{z_idx-1};
+beta = problem.pls.beta{z_idx-1};
+full_line_id = problem.params.cand.line_id{1};
+lock_on = problem.lock_on{z_idx-1};
+lock_off = problem.lock_off{z_idx-1};
 
-% sort best lines by beta vector
-best_lines = beta_graph_search(problem);
-%best_lines = beta_explorer(problem);
+lock_off_n = length(lock_off);
+lock_off(randperm(lock_off_n, ceil(lock_off_n*.1))) = [];
 
-% subset of best lines to look through
-sub_best_lines_n = min(length(best_lines),max_new_lines);
-subset_best_lines_id = best_lines(1:sub_best_lines_n); 
-sub_plan_n = 2^sub_best_lines_n;
+%% Find Lines with Good Beta
+%best_lines = beta_graph_search(problem);
+[keep_lines, drop_lines] = beta_explorer(beta,line_id);
 
-% subset best lines index in original problem structure
-[~, subset_best_lines] = ismember(subset_best_lines_id, line_id);
-
-% loop through subsections of plans
-fit_loop_n = ceil(sub_plan_n / dist_mat_size);
-fit_idx = 0;
-
-% search through plans with fewest lines until enough good ones are found
-while fit_idx < fit_loop_n    
-    % initialize parallel data storage cells
-    par_x_fit_storage = cell(between_cleanup_loop,1);
-    par_line_cost_storage =cell(between_cleanup_loop,1);
-    par_y_fit_storage = cell(between_cleanup_loop,1);
-
-    parfor b_idx = 1: between_cleanup_loop
-        % find index for full array
-        f_idx = fit_idx + b_idx;
+%% Select Lines to Lock and Sample
+lock_off = [lock_off;setdiff(line_id, keep_lines)];
+new_line_id = setdiff(full_line_id, lock_off);
         
-        % retrive sub set of plans for this iteration
-        if f_idx == fit_loop_n
-            x_subset_id = (((f_idx-1)*dist_mat_size+1):sub_plan_n)';
-        elseif f_idx < fit_loop_n 
-            x_subset_id = (((f_idx-1)*dist_mat_size+1):(f_idx*dist_mat_size))';
-        else
-            x_subset_id = [];
-        end
-        
-        if ~isempty(x_subset_id)
-            % convert plan ID to binary lines
-            x_subset = de2bi(x_subset_id-1, sub_best_lines_n);
+%% Update Problem Structure
+problem.params.cand.line_id{z_idx} = new_line_id;
+problem.params.new_line_cost{z_idx} = problem.params.line.cost(new_line_id);
+problem.params.cand.n(z_idx) = length(new_line_id);
+logic_lock_on = zeros(problem.params.line.n,1,'logical');
+logic_lock_on(lock_on) = 1;
+problem.params.line.dec_built{z_idx} = logical(logic_lock_on + problem.params.line.built);
 
-            % remove plans with too many new lines 
-            x_subset = x_subset(sum(x_subset,2) < max_new_lines,:);          
-            
-            % convert plans from best line form to original problem binary
-            x_fit = zeros(size(x_subset,1), n_line);
-            x_fit(:,subset_best_lines) = x_subset; 
-            
-            % remove plans over budget
-            line_cost_distributed = x_fit*line_cost;
-            x_fit(line_cost_distributed > line_budget,:) = [];
-            line_cost_distributed(line_cost_distributed > line_budget,:) = [];
-            
-            %store plan id in original problem format
-            x_original_id = bi2de(x_fit)+1;
-            
-            % convert plans to experimental form
-            %x_fit(:,1:sub_best_lines_n) = (x_fit(:,1:sub_best_lines_n) - .5)*2;
-            if use_int
-                x_col_start = n_line + 1;    
-                for l_idx = 1:(n_line-1)    
-                    x_col_end = x_col_start + ((n_line-1) - l_idx);        
-                    x_fit(:, x_col_start:x_col_end) = repmat(x_fit(:,l_idx),1,(1+x_col_end-x_col_start)).*x_fit(:,(l_idx+1):n_line);        
-                    x_col_start = x_col_end + 1;        
-                end    
-            end
+%% Make Sample
+problem.samp = fraction_fact_samp(problem);
 
-            % check fit for plans
-            y_fit_distributed = [ones(size(x_fit,1),1), x_fit]*beta;
-            logical_good_plan = (y_fit_distributed < good_plan_threshold);
+%% Output
+problem.lock_on{z_idx} = lock_on;
+problem.lock_off{z_idx} = lock_off;
 
-            % store plans with best fits
-            par_x_fit_storage{b_idx} = x_original_id(logical_good_plan);
-            par_line_cost_storage{b_idx} = line_cost_distributed(logical_good_plan);
-            par_y_fit_storage{b_idx} = y_fit_distributed(logical_good_plan);
-        end  
-    end
-
-    % cleanup parallel data
-    good_x_id = [x_fit_id; cell2mat(par_x_fit_storage)];
-    good_line_cost = [line_cost_list; cell2mat(par_line_cost_storage)];
-    good_y = [y_fit; cell2mat(par_y_fit_storage)];
-    clear par_x_fit_storage par_y_fit_storage
-
-    % remove plans that could not be returned by the function
-    %[good_y, good_y_id] = sort(good_y);
-    [good_line_cost, good_line_cost_id] = sort(good_line_cost);
-    x_fit_id = good_x_id(good_line_cost_id);
-    good_y = good_y(good_line_cost_id);
-    samp_size = min(problem.params.pls.fit_samp_n, size(x_fit_id,1));
-    x_fit_id = x_fit_id(1: samp_size);
-    line_cost_list = good_line_cost(1:samp_size);
-    y_fit = good_y(1: samp_size);
-    fit_idx = fit_idx + between_cleanup_loop;
-    clear good_y good_y_id good_x_id;
-end
 end

@@ -5,26 +5,25 @@ function problem = par_plan_ops(problem)
 %History            
 %Version    Date        Who     Summary
 %1          10/07/2017  JesseB  Adapted from dyn_pls_demo
+%2          12/03/2017  JesseB  Minor restructuring to work with full sample as unit8
 
 %% Load needed problem parameters
 params = problem.params;
-samp_id = problem.samp_id;
-samp_size = length(samp_id);
-cand_n = params.cand.n;
-y_var = params.cand.line_id;
-dec_built = params.line.dec_built;
+samp = problem.samp;
+z_idx = problem.z_idx;
+samp_size = size(samp,1);
+line_id = params.cand.line_id{z_idx};
+dec_built = params.line.dec_built{z_idx};
 
 %% Initialize Storage
 par_scen_op_cost = cell(samp_size, params.scen.n);
 par_cand_op_cost = cell(samp_size, 1);
 par_cand_full_cost = cell(samp_size,1);
-par_plan_id = cell(samp_size,1);
-
     
 %% Run all sample plans in parallel
 parfor c_idx = 1:samp_size
 % load relavent data for DC OPF for this plan
-    new_line_idx = y_var.*de2bi(samp_id(c_idx)-1,cand_n)';
+    new_line_idx = line_id.*double(samp(c_idx,:)');
     new_line_idx = nonzeros(new_line_idx);
     dec_lines = dec_built;
     dec_lines(new_line_idx) = true;
@@ -49,13 +48,11 @@ parfor c_idx = 1:samp_size
     op_cost = cell2mat(op_cost);
     par_cand_op_cost{c_idx} = op_cost'*par_params.scen.p;
     par_cand_full_cost{c_idx} = par_cand_op_cost{c_idx} + sum(par_params.line.cost(new_line_idx));
-    par_plan_id{c_idx} = samp_id(c_idx);
 end
         
 %% Parallel Data Cleanup
 problem.scen_op_cost = cell2mat(par_scen_op_cost);
 problem.cand_op_cost = cell2mat(par_cand_op_cost);
 problem.cand_full_cost = cell2mat(par_cand_full_cost); 
-problem.plan_id = cell2mat(par_plan_id);
 
 end
