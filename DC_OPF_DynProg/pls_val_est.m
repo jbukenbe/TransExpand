@@ -12,7 +12,7 @@ function problem = pls_val_est(problem)
 %5          11/15/2017  JesseB  Modified to output refined sample for real time search
 %6          11/18/2017  JesseB  Pulled out good fit id picking process for large arrays
 %7          12/01/2017  JesseB  Tweaked to cope with new search parameters
-
+%8          12/02/2017  JesseB  New sample process outsouced to beta functions
 
 %% Initialization
 % Extract needed data from problem
@@ -52,32 +52,32 @@ end
 
 %% Post Processing
 problem.pls.beta = beta_op;
-good_plan_threshold = min(y)*1.05;
-[x_fit_id, y_fit] = new_samp_from_beta(problem, good_plan_threshold);
+problem.pls.good_plan_threshold = min(y)*1.5;
+[x_fit_id, y_fit] = new_samp_from_beta(problem);
 x_fit_line = de2bi(x_fit_id-1, n_line);
 
 % Get fits for all plans operating costs
-[~,fit_rank]=sort(y_fit);
-plot(y_fit(fit_rank))
+%[~,fit_rank]=sort(y_fit);
+%plot(y_fit(fit_rank))
 
 % Isolate plans with lowest estimated operating costs
-line_samp_n = min(line_samp_n,length(y_fit));
-best_op_set = fit_rank(1:line_samp_n);
+%line_samp_n = min(line_samp_n,length(y_fit));
+%best_op_set = fit_rank(1:line_samp_n);
 
 % Calculate line costs for best plans
-plan_line_cost = x_fit_line(best_op_set,:)*line_cost;
+%plan_line_cost = x_fit_line(best_op_set,:)*line_cost;
 
 % Sort by line cost
-[~, best_line_subset] = sort(plan_line_cost);
-best_op_set = best_op_set(best_line_subset);
+%[~, best_line_subset] = sort(plan_line_cost);
+%best_op_set = best_op_set(best_line_subset);
 
 % Calculate full cost for best sets
-refine_samp_n = min(refine_samp_n, length(best_op_set));
-best_full_set = best_op_set(1:refine_samp_n);
+refine_samp_n = min(refine_samp_n, length(x_fit_id));
+%best_full_set = best_op_set(1:refine_samp_n);
 
 
 %% Output
-problem.samp_id = bi2de(x_fit_line(best_full_set,:))+1;
+problem.samp_id = bi2de(x_fit_line(1:refine_samp_n,:))+1;
 
 
 %% Plotting in debug

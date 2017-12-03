@@ -12,53 +12,30 @@ function problem = dyn_pls_demo()
 %5          10/09/2017  JesseB  Fractional Factorial initial sample
 %6          11/15/2017  JesseB  Removed parallel operations to par_plan_ops
 %7          11/15/2017  JesseB  Streamlined for 2 phase search algorithm
+%8          12/02/2017  JesseB  Moved candidate line data to initialization
 
 % To Do: separate optimization parameters from pls parameters      
 %           Stop hardcoded line inclusion
 
 %% Initialize Data
+% set problem run list
+problem_size_run_list = [50,45,40,35,30];
+
 % read input data files
-
-
-% select candidate lines to include in analysis TODO
-for run_idx = 1:1
+for run_idx = 1:5
 init_time = tic;
-params = DC_OPF_init;    
-switch run_idx
-    case 1
-        y_var = [42 43 50 51 52 53 55 57 60 62 63 64 65 68 69 70 71 72 73 75 76 78 80 82 84 85 86 92 94 95 96 98 100 101 103 105 108 110 112 114 116 118 120 122 125 126 128 130 131 237]';
-    case 2
-        y_var = [42 50 51 52 53 55 57 60 62 63 64 65 68 69 71 72 73 75 76 78 80 82 84 85 86 92 94 96 98 100 101 103 105 108 112 114 116 118 120 122 125 126 128 130 131]';
-    case 3
-        y_var = [42 50 51 52 53 55 57 60 62 63 64 65 68 69 72 73 75 78 80 82 84 85 86 92 94 96 98 100 101 103 105 108 112 114 116 118 120 122 125 131]';
-    case 4
-        y_var = [50 51 52 53 55 57 60 62 63 64 65 68 69 72 73 75 78 80 82 84 85 86 92 94 96 98 100 101 103 105 108 112 118 120 131]';
-    case 5
-        y_var = [50 51 52 53 55 57 60 62 63 64 65 68 69 72 73 75 78 80 82 84 85 86 92 94 96 98 100 101 118 131]';
-    case 6
-        y_var = [51 52 53 55 57 60 62 63 64 65 68 69 72 75 82 84 85 86 92 94 96 98 100 118 131]';
-    otherwise
-        y_var = [51 52 53 55 57 60 62 64 68 69 72 75 82 92 94 96 98 100 118 131]';
-    %y_var = [51 52 53 55 57 60 62 64 69 72 75 82 94 118 131]';
-    %y_var = [51 52 53 55 57 72 75 82 118 131]';
-end
-params.cand.line_id = y_var;
-
-% load relavant line costs
-params.new_line_cost = params.line.cost(y_var);
-
+problem_size = problem_size_run_list(run_idx);
+params = DC_OPF_init(problem_size);    
 
 %% Organize Candidate Plan for Optimal Operation Cost Run
 % calculate number of candidate lines and plans
-cand_n = sum(y_var>0);
-params.cand.n = cand_n;
-plan_n = 2^cand_n;
-params.plan.n = plan_n;
-params.line.dec_built = logical(params.line.built);
+line_id = params.cand.line_id;
+cand_n = params.cand.n;
+plan_n = params.plan.n;
 
 % make initial sample of plans
-problem.samp_id = randperm(plan_n,params.initial_samp_n)';
-%samp_id = fraction_fact_samp(params, cand_n);
+%problem.samp_id = randperm(plan_n,params.initial_samp_n)';
+problem.samp_id = fraction_fact_samp(params);
 
 % Move all data to problem structure
 problem.params = params;
@@ -101,9 +78,10 @@ problem.refined_samp_run_time = toc(problem.refined_samp_run_time);
 %% Output Data
 problem.solution_value = best_plan_full_cost;
 problem.solution_id = best_plan_id;
-problem.solution_lines = nonzeros(de2bi(problem.plan_id(best_plan_id)-1,cand_n)'.*y_var);
+problem.solution_lines = nonzeros(de2bi(problem.plan_id(best_plan_id)-1,cand_n)'.*line_id);
 problem.runtime = toc(init_time);
 filename = sprintf('%s_%d','output',run_idx);
 write_struct(problem, filename);
+clear problem params
 end
 end

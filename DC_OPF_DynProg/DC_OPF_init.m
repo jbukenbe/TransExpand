@@ -1,4 +1,4 @@
-function params = DC_OPF_init()
+function params = DC_OPF_init(problem_size)
 % This file initializes the parameters for the DC optimal power flow operations
 % model. It currently initializes the IEEE 30-Bus test case
 
@@ -9,6 +9,7 @@ function params = DC_OPF_init()
 %3          10/08/2017  JesseB  Added line cost data
 %4          11/18/2017  JesseB  Added Parameters for online search
 %5          11/30/2017  JesseB  Added maximim number of new lines to install
+%6          12/02/2017  JesseB  Added candidate line info
 
 %% Read GAMS Data
 bus_data = importdata('bus_data.txt');
@@ -22,9 +23,9 @@ cos_apx_data = importdata('cos_apx_data.txt');
 
 %% PLS Data
 params.pls.interaction = 1;
-params.pls.refine_samp_n = 500;
-params.pls.line_samp_n = 4000000;
-params.pls.fit_samp_n = 4000000;
+params.pls.refine_samp_n = 200;
+params.pls.line_samp_n = 5000000;
+params.pls.fit_samp_n = 5000000;
 params.pls.n_comp = 10;
 params.pls.dist_mat_size = 100000;
 
@@ -33,8 +34,8 @@ params.theta_lim = .5;
 params.cpns = 1000;
 params.fix_line_cost = 4;
 params.var_line_cost = 100;
-params.initial_samp_n = 500;
-params.max_new_lines = 22;
+params.initial_samp_n = 150;
+params.max_new_lines = 23;
 params.line_budget = 150;
 
 %% Scenario Initialization
@@ -69,4 +70,40 @@ params.line.loss.slope = cos_apx_data.data(:,1);
 params.line.loss.const = cos_apx_data.data(:,2);
 params.line.loss.n = size(params.line.loss.slope,1);
 
+%% Load Candidate Line Info
+
+% pick candidate line ids
+switch problem_size
+    case 196
+        line_id = (42:237)';
+    case 75
+        line_id = [42 43 50 51 52 53 55 57 60 62 63 64 65 68 69 70 71 72 73 75 76 78 80 82 84 85 86 92 94 95 96 98 100 101 103 105 108 110 112 114 116 118 120 122 125 126 128 130 131 140:164 237]';
+    case 50
+        line_id = [42 43 50 51 52 53 55 57 60 62 63 64 65 68 69 70 71 72 73 75 76 78 80 82 84 85 86 92 94 95 96 98 100 101 103 105 108 110 112 114 116 118 120 122 125 126 128 130 131 237]';
+    case 45
+        line_id = [42 50 51 52 53 55 57 60 62 63 64 65 68 69 71 72 73 75 76 78 80 82 84 85 86 92 94 96 98 100 101 103 105 108 112 114 116 118 120 122 125 126 128 130 131]';
+    case 40
+        line_id = [42 50 51 52 53 55 57 60 62 63 64 65 68 69 72 73 75 78 80 82 84 85 86 92 94 96 98 100 101 103 105 108 112 114 116 118 120 122 125 131]';
+    case 35
+        line_id = [50 51 52 53 55 57 60 62 63 64 65 68 69 72 73 75 78 80 82 84 85 86 92 94 96 98 100 101 103 105 108 112 118 120 131]';
+    case 30
+        line_id = [50 51 52 53 55 57 60 62 63 64 65 68 69 72 73 75 78 80 82 84 85 86 92 94 96 98 100 101 118 131]';
+    case 25
+        line_id = [51 52 53 55 57 60 62 63 64 65 68 69 72 75 82 84 85 86 92 94 96 98 100 118 131]';
+    case 20
+        line_id = [51 52 53 55 57 60 62 64 68 69 72 75 82 92 94 96 98 100 118 131]';
+    case 15
+        line_id = [51 52 53 55 57 60 62 64 69 72 75 82 94 118 131]';
+    case 10
+        line_id = [51 52 53 55 57 72 75 82 118 131]';
+    otherwise
+        line_id = (42:237)';
+end
+
+% write problem specific info based on included lines
+params.cand.line_id = line_id;
+params.new_line_cost = params.line.cost(line_id);
+params.cand.n = sum(line_id>0);
+params.plan.n = 2^params.cand.n;
+params.line.dec_built = logical(params.line.built);
 end

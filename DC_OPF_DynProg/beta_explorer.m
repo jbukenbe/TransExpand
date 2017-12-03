@@ -18,7 +18,6 @@ interact_list = nchoosek(line_id,2);
 beta_map = [0 0;line_id, zeros(size(line_id,1),1);interact_list];
 beta_line_map = [beta, beta_map];
 
-
 for l_idx = 1:length(line_id)
     line_idx = line_id(l_idx);
     top_b_logic = beta_line_map(:,2) == line_idx;
@@ -30,7 +29,7 @@ end
 keep_lines = line_find(1, line_beta, line_id, beta_line_map);
 drop_lines = line_find(0, line_beta, line_id, beta_line_map);
 
-%% Alg keep
+%% Run the Algorithm
 function return_lines = line_find(keep, line_beta, line_id, beta_line_map)
     % find line with most impactful beta coefficient depending on if we are
     % looking for lines to keep or drop
