@@ -15,7 +15,7 @@ else
     samp_size = problem.params.initial_samp_n;
 end
 
-hadamard_power = ceil(log(samp_size)/log(2));
+hadamard_power = ceil(log(max(samp_size,cand_n)+1)/log(2));
 hadamard_size = 2^hadamard_power;
 
 walsh_index = [1 2 4 8 15 16 32 51 64 85 106 128 150 171 219 237 247 256 ...

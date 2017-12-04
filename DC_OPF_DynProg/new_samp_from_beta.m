@@ -15,14 +15,21 @@ lock_on = problem.lock_on{z_idx-1};
 lock_off = problem.lock_off{z_idx-1};
 
 lock_off_n = length(lock_off);
-lock_off(randperm(lock_off_n, ceil(lock_off_n*.1))) = [];
+lock_off(randperm(lock_off_n, ceil(lock_off_n*.10))) = [];
 
 %% Find Lines with Good Beta
-%best_lines = beta_graph_search(problem);
-[keep_lines, drop_lines] = beta_explorer(beta,line_id);
-
+if problem.params.pls.interaction 
+    %best_lines = beta_graph_search(problem);
+    [keep_lines, drop_lines] = beta_explorer(beta,line_id);
+else
+    [~,beta_order] = sort(beta(2:end));
+    keep_lines = line_id(beta_order);
+    drop_lines = line_id(flip(beta_order));
+end
+    
 %% Select Lines to Lock and Sample
-lock_off = [lock_off;setdiff(line_id, keep_lines)];
+drop_n = length(drop_lines);
+lock_off = [lock_off;drop_lines(1:(ceil(.5*drop_n)))];
 new_line_id = setdiff(full_line_id, lock_off);
         
 %% Update Problem Structure

@@ -131,5 +131,8 @@ b = [b_load; b_loss; b_flow];
 options = optimoptions('linprog','Algorithm','dual-simplex','Display','none','OptimalityTolerance',1.0000e-07);
 [x, op_cost] = linprog(c, A, b,[],[], lb, ub,[], options);
 
+if op_cost == 0
+    op_cost = 10000;
+end
 end
 

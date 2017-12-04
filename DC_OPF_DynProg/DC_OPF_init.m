@@ -20,12 +20,15 @@ gen_pmax_data = importdata('gen_pmax_data.txt');
 line_data = importdata('line_data.txt');
 cos_apx_data = importdata('cos_apx_data.txt');
 
+%% SVD Data
+params.svd.scen_n = 3;
+params.svd.use_latent_fac = 0;
 
 %% PLS Data
-params.pls.interaction = 1;
+params.pls.interaction = 0;
 params.pls.line_samp_n = 5000000;
 params.pls.fit_samp_n = 5000000;
-params.pls.n_comp = 10;
+params.pls.n_comp = 5;
 params.pls.dist_mat_size = 100000;
 
 %% Scalor Optimization Data
@@ -35,8 +38,8 @@ params.fix_line_cost = 4;
 params.var_line_cost = 100;
 params.max_new_lines = 23;
 params.line_budget = 150;
-params.initial_samp_n = 200;
-params.refine_samp_n = 130;
+params.initial_samp_n = 100;
+params.refine_samp_n = 100;
 
 %% Scenario Initialization
 params.scen.n = size(bus_data.data,2);
@@ -45,7 +48,6 @@ params.scen.p = ones(params.scen.n,1)*1/params.scen.n;
 %% Bus Initialization
 params.bus.load = bus_data.data;
 params.bus.n = size(params.bus.load,1);
-
 
 %% Generator Initialization
 params.gen.loc = gen_loc_data.data;

@@ -1,59 +1,34 @@
-function A_fill = mat_fill_svd(A,T)
+function approx_out = mat_fill_svd(svd_values, svd_directions,partial_vec)
 % This function makes a Singular Value Decomposition of an incomplete
 % matrix and returns the estimated full matrix value
 
 %History            
 %Version    Date        Who     Summary
 %1          10/10/2017  JesseB  Initial Version
+%2          12/03/2017  JesseB  Integrated into line search
 
 
-[U,S,V] = svd(A);
+% format singular values into square matrix
+s_n = size(svd_values,2);
+svd_values = svd_values(1:s_n,1:s_n);
 
-S = S(1:9,1:9);
-Sless = S;
-Sless(4:end,:)=0;
-SV = Sless*V';
-x = zeros(9,1);
-T_est = zeros(size(T));
+loadings = svd_values*svd_directions';
+loadings = loadings(1:3,:);
 
-
-function xest = grad_dec(A,x,b)
-    err = 2;
-    for n = 1:2000;
-        for idx = 1:3
-            err = b -  A*x;
-            delta =  .00000000013*err(idx).*A(idx,:)';
-            x = x +delta; 
-        end
+%gradient decent to tune partial_fill U to fit known results as much as possible
+loading_n = size(loadings,1);
+u_approx = zeros(1,loading_n);
+known_idx = find(partial_vec);        
+for er_idx = 1:250   
+    for j_idx = 1:length(known_idx)
+        err = partial_vec -  u_approx*loadings;
+        k_idx = known_idx(j_idx);
+        delta =  .00000000013*err(k_idx).*loadings(:,k_idx);
+        u_approx = u_approx + delta'; 
     end
-    xest = A*x;
+end
+approx_out = u_approx*loadings;
+part_fill_logic = (partial_vec~=0);
+approx_out(part_fill_logic)= partial_vec(part_fill_logic);
 end
 
-
-for t_idx = 1:length(T)
-    T_est(t_idx,:) = grad_dec(SV',x,T(t_idx,:)');
-end
-A_fill = [A;T_est];
-
-%num_A_val = sum(val_map);
-%sum_A_col = sum(A);
-
-%mean_A = sum_A_col./num_A_val;
-%std_A = zeros(size(mean_A));
-
-%for s_idx = 1:size(A,2)
-%    A_col = A(val_map(:,s_idx));
-%    std_A(s_idx) =  std(A_col);
-%end
-
-%A_mean_fill = A - mean_A.*val_map;
-%A_stand = A_mean_fill./std_A;
-
-
-%[U,S,V] = svd(A_stand);
-%A_stand_fill = U*S*V';
-
-%A_fill = (A_stand_fill.*std_A)+ mean_A(ones(size(A,1),1),:);
-
-
-end

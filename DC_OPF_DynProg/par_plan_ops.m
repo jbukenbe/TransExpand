@@ -28,26 +28,52 @@ parfor c_idx = 1:samp_size
     dec_lines = dec_built;
     dec_lines(new_line_idx) = true;
 
-% copy parameter data for parfor 
+% copy parameter data for parallel running
     par_params = params;
     par_params.cand.imp = params.line.imp(dec_lines);
     par_params.cand.res = params.line.res(dec_lines);
     par_params.cand.from_to = params.line.from_to(dec_lines,:);
     par_params.cand.max_flow = params.line.max_flow(dec_lines);
 
-
-%% Run Scenario Optimization in Parallel
+    total_line_cost = sum(par_params.line.cost(new_line_idx));
+    
+%% Run Scenario Optimization
 % run optimization to get operating cost of this plan for each scenario
-    op_cost = cell(par_params.scen.n,1);
-    for scen = 1:par_params.scen.n
-        op_cost{scen} = DC_OPF_operations(par_params, dec_lines, scen);
+    op_cost = cell(1,par_params.scen.n);
+    op_cost(1,:) = {0};
+    if ~par_params.svd.use_latent_fac
+        % calculate all operating scenarios
+        for scen = 1:par_params.scen.n
+            op_cost{scen} = DC_OPF_operations(par_params, dec_lines, scen);
+        end
+    else
+        % estimate operations with svd latent factor approximation
+         for scen = 1:par_params.svd.scen_n
+            scen_latent = par_params.svd.latent_scen(scen);
+            op_cost{scen_latent} = DC_OPF_operations(par_params, dec_lines, scen_latent);
+         end
+         
+        % approximate total cost
+        approx_out = mat_fill_svd(par_params.svd.s_values, par_params.svd.directions, cell2mat(op_cost));
+        approx_cost = approx_out*par_params.scen.p;
+        
+        % if this looks like a good plan, calculate the full cost
+        if approx_cost < par_params.svd.good_plan_threshold
+            for scen = 1:(par_params.scen.n - par_params.svd.scen_n)
+                scen_filler = par_params.svd.filler_scen(scen);
+                op_cost{scen_filler} = DC_OPF_operations(par_params, dec_lines, scen_filler);
+            end
+        else
+            op_cost = num2cell(approx_out);
+        end
     end
-
+    
+    
 %% Store Output Data
-    par_scen_op_cost(c_idx,:) = op_cost';
+    par_scen_op_cost(c_idx,:) = op_cost;
     op_cost = cell2mat(op_cost);
-    par_cand_op_cost{c_idx} = op_cost'*par_params.scen.p;
-    par_cand_full_cost{c_idx} = par_cand_op_cost{c_idx} + sum(par_params.line.cost(new_line_idx));
+    par_cand_op_cost{c_idx} = op_cost*par_params.scen.p;
+    par_cand_full_cost{c_idx} = par_cand_op_cost{c_idx} + total_line_cost;
 end
         
 %% Parallel Data Cleanup
