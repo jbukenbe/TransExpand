@@ -10,6 +10,7 @@ function params = DC_OPF_init(problem)
 %4          11/18/2017  JesseB  Added Parameters for online search
 %5          11/30/2017  JesseB  Added maximim number of new lines to install
 %6          12/02/2017  JesseB  Added candidate line info
+%7          12/03/2017  JesseB  Added SVD approximation info
 
 %% Read GAMS Data
 bus_data = importdata('bus_data.txt');

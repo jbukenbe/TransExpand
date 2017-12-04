@@ -5,6 +5,7 @@ function problem = new_samp_from_beta(problem)
 %History            
 %Version    Date        Who     Summary
 %1          11/18/2017  JesseB  Initial Version
+%2          12/04/2017  JesseB  HACK wip while experimenting with sample techniques
 
 %% Initialize Data
 z_idx = problem.z_idx;

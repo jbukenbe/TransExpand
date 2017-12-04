@@ -13,6 +13,7 @@ function problem = pls_val_est(problem)
 %6          11/18/2017  JesseB  Pulled out good fit id picking process for large arrays
 %7          12/01/2017  JesseB  Tweaked to cope with new search parameters
 %8          12/02/2017  JesseB  New sample process outsouced to beta functions
+%9          12/03/2017  JesseB  Updated to work with new uint8 plan id
 
 %% Initialization
 % Extract needed data from problem

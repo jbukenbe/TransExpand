@@ -6,6 +6,7 @@ function problem = par_plan_ops(problem)
 %Version    Date        Who     Summary
 %1          10/07/2017  JesseB  Adapted from dyn_pls_demo
 %2          12/03/2017  JesseB  Minor restructuring to work with full sample as unit8
+%3          12/03/2017  JesseB  Added SVD approximator first version
 
 %% Load needed problem parameters
 params = problem.params;

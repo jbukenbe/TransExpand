@@ -13,7 +13,7 @@ function problem = dyn_pls_demo()
 %6          11/15/2017  JesseB  Removed parallel operations to par_plan_ops
 %7          11/15/2017  JesseB  Streamlined for 2 phase search algorithm
 %8          12/02/2017  JesseB  Moved candidate line data to initialization
-
+%9          12/03/2017  JesseB  Added SVD approximation first version
 
 %% Initialize Data
 % set problem run list
