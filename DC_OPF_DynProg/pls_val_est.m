@@ -18,7 +18,7 @@ function problem = pls_val_est(problem)
 %% Initialization
 % Extract needed data from problem
 z_idx = problem.z_idx;
-y = problem.cand_full_cost(problem.samp_range(1,z_idx):problem.samp_range(2,z_idx));
+y = problem.cand_op_cost(problem.samp_range(1,z_idx):problem.samp_range(2,z_idx));
 x = problem.samp;
 n_line = problem.params.cand.n(z_idx);
 use_int = problem.params.pls.interaction;

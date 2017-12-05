@@ -16,7 +16,7 @@ lock_on = problem.lock_on{z_idx-1};
 lock_off = problem.lock_off{z_idx-1};
 
 lock_off_n = length(lock_off);
-lock_off(randperm(lock_off_n, ceil(lock_off_n*.10))) = [];
+%lock_off(randperm(lock_off_n, ceil(lock_off_n*.10))) = [];
 
 %% Find Lines with Good Beta
 if problem.params.pls.interaction 
@@ -30,7 +30,7 @@ end
     
 %% Select Lines to Lock and Sample
 drop_n = length(drop_lines);
-lock_off = [lock_off;drop_lines(1:(ceil(.5*drop_n)))];
+lock_off =[];% [lock_off;drop_lines(1:(ceil(.2*drop_n)))];
 new_line_id = setdiff(full_line_id, lock_off);
         
 %% Update Problem Structure
@@ -38,11 +38,11 @@ problem.params.cand.line_id{z_idx} = new_line_id;
 problem.params.new_line_cost{z_idx} = problem.params.line.cost(new_line_id);
 problem.params.cand.n(z_idx) = length(new_line_id);
 logic_lock_on = zeros(problem.params.line.n,1,'logical');
-logic_lock_on(lock_on) = 1;
+logic_lock_on(lock_on) = 0;%1;
 problem.params.line.dec_built{z_idx} = logical(logic_lock_on + problem.params.line.built);
 
 %% Make Sample
-problem.samp = fraction_fact_samp(problem);
+problem.samp = beta_budget_samp(problem);
 
 %% Output
 problem.lock_on{z_idx} = lock_on;

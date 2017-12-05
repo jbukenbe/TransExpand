@@ -22,7 +22,7 @@ line_data = importdata('line_data.txt');
 cos_apx_data = importdata('cos_apx_data.txt');
 
 %% SVD Data
-params.svd.scen_n = 3;
+params.svd.scen_n = 2;
 params.svd.use_latent_fac = 0;
 
 %% PLS Data
@@ -39,8 +39,8 @@ params.fix_line_cost = 4;
 params.var_line_cost = 100;
 params.max_new_lines = 23;
 params.line_budget = 150;
-params.initial_samp_n = 100;
-params.refine_samp_n = 100;
+params.initial_samp_n = 200;
+params.refine_samp_n = 500;
 
 %% Scenario Initialization
 params.scen.n = size(bus_data.data,2);

@@ -17,7 +17,7 @@ function problem = dyn_pls_demo()
 
 %% Initialize Data
 % set problem run list
-problem_size_run_list = [196, 50, 45,40,35,30];
+problem_size_run_list = [196,50, 45,40,35,30];
 
 % read input data files
 for run_idx = 1:1
@@ -37,6 +37,7 @@ cand_n = problem.params.cand.n;
 %problem.samp_id = randperm(plan_n,params.initial_samp_n)';
 problem.samp = fraction_fact_samp(problem);
 problem.plan{1} = problem.samp;
+out_plan = problem.samp;
 problem.samp_range(1,problem.z_idx) = 1;
 problem.samp_range(2,problem.z_idx) = size(problem.samp,1); 
 problem.init_time = toc(init_time);
@@ -48,19 +49,19 @@ problem.run_time = toc(run_time);
 [best_plan_full_cost, best_plan_id] = min(problem.cand_full_cost);
 best_plan = problem.params.cand.line_id{z_idx}.*double(nonzeros(problem.plan{z_idx}(best_plan_id,:)))';
 best_set = 1;
-fprintf('%d%s%6.2f\n',problem.z_idx,'  Current best solution: ',best_plan_full_cost);
+fprintf('%d %f %s%6.2f\n',problem.z_idx,toc(init_time),'  Current best solution: ',best_plan_full_cost);
 
 %% Save SVD Latent Factor Info
 problem.params.svd.use_latent_fac = 1;
 [~,problem.params.svd.s_values, problem.params.svd.directions] = svd(problem.scen_op_cost);
 [~,factor_id] =sort(abs(problem.params.svd.directions(:,1:problem.params.svd.scen_n)),'descend');
-factor_id = unique(factor_id','rows','stable'); 
+factor_id = unique(factor_id','stable'); 
 problem.params.svd.latent_scen = factor_id(1:problem.params.svd.scen_n);
 problem.params.svd.filler_scen = setdiff(1:problem.params.scen.n,problem.params.svd.latent_scen);
 problem.params.svd.good_plan_threshold = min(problem.cand_full_cost);
 
 %% Loop Through PLS fits
-while problem.z_idx < 10  
+while problem.z_idx < 200  
     %% Update SVD info
     problem.params.svd.good_plan_threshold = min(problem.cand_op_cost)*1.05;
     
@@ -89,23 +90,24 @@ while problem.z_idx < 10
     % Run refined sample
     problem = par_plan_ops(problem);
     [best_set_plan_full_cost, best_set_plan] = min(problem.cand_full_cost);
-    itr_best_plan = nonzeros(problem.params.cand.line_id{z_idx}.*double((problem.plan{z_idx}(best_set_plan,:)))');
-    itr_best_plan = [itr_best_plan;problem.lock_on{z_idx};];
+    itr_best_plan{z_idx} = nonzeros(problem.params.cand.line_id{z_idx}.*double((problem.plan{z_idx}(best_set_plan,:)))');
+    %itr_best_plan = [itr_best_plan;problem.lock_on{z_idx};];
     
     % Reload and combine sample data
     problem.scen_op_cost = [saved_scen_op_cost; problem.scen_op_cost]; clear saved_scen_op_cost;
     problem.cand_op_cost = [saved_cand_op_cost; problem.cand_op_cost]; clear saved_cand_op_cost;
     problem.cand_full_cost= [saved_cand_full_cost; problem.cand_full_cost]; clear saved_cand_full_cost;
-
+    out_plan = [out_plan; problem.samp];
+    
     % Find the best plan and its costs
     [~, best_plan_id] = min(problem.cand_full_cost);
     if best_set_plan_full_cost < best_plan_full_cost
         best_plan_full_cost = best_set_plan_full_cost;
         best_set = z_idx;
-        best_plan = itr_best_plan;
-        fprintf('%d%s%6.2f\n',problem.z_idx,'  New solution found: ',best_set_plan_full_cost);
+        best_plan = itr_best_plan{z_idx};
+        fprintf('%d  %f  %s%6.2f\n',problem.z_idx,toc(init_time), '  New solution found: ',best_set_plan_full_cost);
     else
-        fprintf('%d%s%6.2f\n',problem.z_idx,'  This best solution: ',best_set_plan_full_cost);
+        fprintf('%d  %f  %s%6.2f\n',problem.z_idx,toc(init_time),'  This best solution: ',best_set_plan_full_cost);
     end
     problem.run_time(z_idx) = toc(run_time);
 end
