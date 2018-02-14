@@ -40,6 +40,7 @@ clear hadamard_samp
 samp = ((samp +1)./2);
 samp = uint8(samp);
 samp = samp(:,randperm(cand_n));
+samp = [eye(cand_n,'uint8');samp];
 %{
 if params.interaction 
     one_idx = nchoosek(1:cand_n,2);

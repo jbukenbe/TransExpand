@@ -13,16 +13,21 @@ function params = DC_OPF_init(problem)
 %7          12/03/2017  JesseB  Added SVD approximation info
 
 %% Read GAMS Data
-bus_data = importdata('bus_data.txt');
+%bus_data = importdata('bus_data.txt');
+%gen_price_data = importdata('gen_price_data.txt');
+%gen_pmin_data = importdata('gen_pmin_data.txt');
+%gen_pmax_data = importdata('gen_pmax_data.txt');
 gen_loc_data = importdata('gen_loc_data.txt');
-gen_price_data = importdata('gen_price_data.txt');
-gen_pmin_data = importdata('gen_pmin_data.txt');
-gen_pmax_data = importdata('gen_pmax_data.txt');
 line_data = importdata('line_data.txt');
 cos_apx_data = importdata('cos_apx_data.txt');
 
+bus_data = importdata('cor_bus_data.txt');
+gen_price_data = importdata('cor_gen_price_data.txt');
+gen_pmin_data = importdata('cor_pmin_data.txt');
+gen_pmax_data  = importdata('cor_pmax_data.txt');
+
 %% SVD Data
-params.svd.scen_n = 2;
+params.svd.scen_n = 20;
 params.svd.use_latent_fac = 0;
 
 %% PLS Data
@@ -40,7 +45,7 @@ params.var_line_cost = 100;
 params.max_new_lines = 23;
 params.line_budget = 150;
 params.initial_samp_n = 200;
-params.refine_samp_n = 500;
+params.refine_samp_n = 300;
 
 %% Scenario Initialization
 params.scen.n = size(bus_data.data,2);
