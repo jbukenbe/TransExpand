@@ -7,6 +7,7 @@ function problem = par_plan_ops(problem)
 %1          10/07/2017  JesseB  Adapted from dyn_pls_demo
 %2          12/03/2017  JesseB  Minor restructuring to work with full sample as unit8
 %3          12/03/2017  JesseB  Added SVD approximator first version
+%4          02/19/2017  JesseB  Compatible with integer lines
 
 %% Load needed problem parameters
 params = problem.params;
@@ -22,18 +23,22 @@ par_cand_op_cost = cell(samp_size, 1);
 par_cand_full_cost = cell(samp_size,1);
     
 %% Run all sample plans in parallel
-parfor c_idx = 1:samp_size
+for c_idx = 1:samp_size
 % load relavent data for DC OPF for this plan
     new_line_idx = line_id.*double(samp(c_idx,:)');
     new_line_idx = nonzeros(new_line_idx);
     dec_lines = dec_built;
     dec_lines(new_line_idx) = true;
+    new_number_built = zeros(size(dec_lines,1),1);
+    new_number_built(new_line_idx) = nonzeros(double(samp(c_idx,:)'));
+    cand_line_n = params.line.per_corridor + new_number_built;
 
 % copy parameter data for parallel running
     par_params = params;
     par_params.cand.imp = params.line.imp(dec_lines);
     par_params.cand.res = params.line.res(dec_lines);
     par_params.cand.from_to = params.line.from_to(dec_lines,:);
+    par_params.cand.per_corridor = cand_line_n(dec_lines,:);
     par_params.cand.max_flow = params.line.max_flow(dec_lines);
 
     total_line_cost = sum(par_params.line.cost(new_line_idx));

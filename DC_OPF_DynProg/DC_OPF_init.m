@@ -11,6 +11,7 @@ function params = DC_OPF_init(problem)
 %5          11/30/2017  JesseB  Added maximim number of new lines to install
 %6          12/02/2017  JesseB  Added candidate line info
 %7          12/03/2017  JesseB  Added SVD approximation info
+%8          02/19/2017  JesseB  Lines per corridor capability added
 
 %% Read GAMS Data
 %bus_data = importdata('bus_data.txt');
@@ -64,7 +65,8 @@ params.gen.n = size(params.gen.loc,1);
 
 %% Line Initialization
 params.line.cost = line_data.data(:,8);
-params.line.built = line_data.data(:,7);
+params.line.per_corridor = line_data.data(:,7);
+params.line.built = (line_data.data(:,7)>0);
 params.line.cand = line_data.data(:,6);
 params.line.full = line_data.data(:,6) + line_data.data(:,7);
 params.line.res = line_data.data(:,3);
