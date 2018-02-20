@@ -29,10 +29,6 @@ problem.lock_on{1} = [];
 problem.lock_off{1} = [];
 
 %% Organize Candidate Plan for Optimal Operation Cost Run
-% calculate number of candidate lines and plans
-line_id = problem.params.cand.line_id{1};
-cand_n = problem.params.cand.n;
-
 % make initial sample of plans
 %problem.samp_id = randperm(plan_n,params.initial_samp_n)';
 problem.samp = fraction_fact_samp(problem);

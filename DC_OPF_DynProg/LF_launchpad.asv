@@ -11,54 +11,53 @@ function status = LF_launchpad()
 status = 0;
 test_rep_n = 2;
 initial_samp_list = 20:20:200;
-lat_fact_list = 1:20;
-samp_per_lf = 1:3;
+lat_fact_list = 1:4;
+samp_per_lf = 1:2;
 
 init_samp_n = length(initial_samp_list);
 lat_fact_n = length(lat_fact_list);
 samp_per_lf_n = length(samp_per_lf);
 
-initial_samp_runtime_log = zeros(test_rep_n, init_samp_n, lat_fact_n, samp_per_lf_n);
-second_samp_runtime_log = zeros(test_rep_n, init_samp_n, lat_fact_n, samp_per_lf_n);
-total_runtime_log = zeros(test_rep_n, init_samp_n, lat_fact_n, samp_per_lf_n);
+% Run crossvalidation set
+cross_val_prob.samp_n = 100; 
+cross_val_prob = LF_crossval_set(cross_val_prob, 'calculate');
 
-observed_cost_log = zeros(test_rep_n, init_samp_n, lat_fact_n, samp_per_lf_n);
-approx_cost_log = zeros(test_rep_n, init_samp_n, lat_fact_n, samp_per_lf_n);
-approx_ss_log = zeros(test_rep_n, init_samp_n, lat_fact_n, samp_per_lf_n);
-observed_ss_log = zeros(test_rep_n, init_samp_n, lat_fact_n, samp_per_lf_n);
+% Create Data log matricies
+%initial_samp_runtime_log = zeros(test_rep_n, init_samp_n, lat_fact_n, samp_per_lf_n);
+%second_samp_runtime_log = zeros(test_rep_n, init_samp_n, lat_fact_n, samp_per_lf_n);
+
+%observed_cost_log = zeros(test_rep_n, init_samp_n, lat_fact_n, samp_per_lf_n);
+%approx_cost_log = zeros(test_rep_n, init_samp_n, lat_fact_n, samp_per_lf_n);
+err_ss_log = zeros(test_rep_n, init_samp_n, lat_fact_n, samp_per_lf_n);
 approx_r_sq_log = zeros(test_rep_n, init_samp_n, lat_fact_n, samp_per_lf_n);
 observed_r_sq_log = zeros(test_rep_n, init_samp_n, lat_fact_n, samp_per_lf_n);
 
 
 %% Run Iterations
-for i_idx = 1:init_samp_n
-% Initial Sample Size
-    init_samp = init_samp_list(i_idx);    
-    
-    for f_idx = 1:lat_fact_n
+for n_idx = 1:test_rep_n
+    for i_idx = 1:init_samp_n
+% Make initial sample for speed and comparability
+        init_samp = initial_samp_list(i_idx);    
+        test_prob = LF_test_init(init_samp);
+
+        for f_idx = 1:lat_fact_n
 % Number of Latent Factors
-        lat_fact = lat_fact_list(f_idx);
-        
-        for s_idx = 1:samp_per_lf_n
+            test_prob.LF_n = lat_fact_list(f_idx);
+
+            for s_idx = 1:samp_per_lf_n
 % Scenarios per Latent Factor
-            samp_per = samp_per_lf_list(s_idx);            
-            
-            for n_idx = 1:test_rep_n
+                test_prob.samp_per = samp_per_lf(s_idx);            
+
 % Run Tests
-                test_prob = LF_test_init(init_samp, lat_fact, samp_per);
-                test_prob = svd_approx(test_prob, 'initialize');
-                test_prob = LF_test_secondary(test_prob);
-                test_prob = svd_approx(test_prob, 'estimate');
+                test_prob = svd_approx(test_prob, cross_val_prob);           
 
 % Record data
-                initial_samp_runtime_log(n_idx, i_idx, f_idx, s_idx) = test_prob.init_samp_runtime;
-                second_samp_runtime_log(n_idx, i_idx, f_idx, s_idx) = test_prob.second_samp_runtime;
-                total_runtime_log(n_idx, i_idx, f_idx, s_idx) = test_prob.total_runtime;
+                %initial_samp_runtime_log(n_idx, i_idx, f_idx, s_idx) = test_prob.init_samp_runtime;
+                %second_samp_runtime_log(n_idx, i_idx, f_idx, s_idx) = test_prob.second_samp_runtime;
 
-                approx_cost_log(n_idx, i_idx, f_idx, s_idx) = test_prob.approx_cost;
-                observed_cost_log(n_idx, i_idx, f_idx, s_idx) = test_prob.actual_cost;
-                approx_ss_log(n_idx, i_idx, f_idx, s_idx) = test_prob.sum_squares_est;
-                observed_ss_log(n_idx, i_idx, f_idx, s_idx) = test_prob.obs_sum_squares;
+                %approx_cost_log(n_idx, i_idx, f_idx, s_idx) = test_prob.approx_cost;
+                %observed_cost_log(n_idx, i_idx, f_idx, s_idx) = test_prob.actual_cost;
+                err_ss_log(n_idx, i_idx, f_idx, s_idx) = test_prob.sum_squares_est;
                 approx_r_sq_log(n_idx, i_idx, f_idx, s_idx) = test_prob.r_squared_est;
                 observed_r_sq_log(n_idx, i_idx, f_idx, s_idx) = test_prob.obs_r_squaree;
             end
@@ -77,57 +76,8 @@ log.observed_ss = observed_ss_log;
 log.approx_r_sq = approx_r_sq_log;
 log.observed_r_sq = observed_r_sq_log;
 
-
+filename = 'LF_logs.mat';
+output = matfile(filename);
+output.log = log;
 status = 1
-
-
-
-T = [A(1:20,:);A(32238:32273,:);A(randperm(32768,100),:)];
-Tavg = mean(T);
-T_mean_cent = T - Tavg;
-[U,S, V] = svd(T_mean_cent);
-X = (S(1:3,1:3)*[V(2:3,1:3);V(8,1:3)]')';
-H = V(:,1:3)*S(1:3,1:3)*inv(X'*X)*X';
-Hridge = V(:,1:3)*inv(X'*X -.001*eye(3))*X';
-sumH = sum(H);
-sumH_ridge = sum(Hridge);
-for a_idx = 1:600
-    partial_vec = A(a_idx+22354,:)- Tavg;
-    partial_vec(1) = 0;
-    partial_vec(4:7) = 0;
-    partial_vec(9) = 0;
-    Y = partial_vec(logical([0 1 1 0 0 0 0 1 0]))';
-    [approx_out, u_approx] = mat_fill_svd(S(1:3,1:3), V,partial_vec);
-    approx_out = approx_out+ Tavg-A(a_idx+300,:)
-    y_hat = (H*Y)'+ Tavg - A(a_idx+22354,:)
-    y_hat_ridge = (Hridge*Y)'+ Tavg - A(a_idx+22354,:)
-    expect = sumH*Y/9 + mean(Tavg)
-    expect_ridge = sumH_ridge*Y/9 + mean(Tavg)
-    tr = mean(A(a_idx+22354,:))
 end
-
-
-
-
-%{
-robust_log = zeros(20,20);
-expected_cost_err_log = zeros(20,20);
-
-for svd_scen = 1:20
-    for init_idx = 10:10:200
-        test_prob = dyn_pls_demo(saved_problem, init_idx+25,svd_scen);
-        second_samp_approx = test_prob.scen_op_cost((26+init_idx):end,:);
-        
-        robust_error = (abs(max(saved_problem.second_samp_real(36:end,:)')-max(second_samp_approx')))./max(saved_problem.second_samp_real(36:end,:)');
-        robust_mse = sum(robust_error)/3;
-        robust_log(init_idx/10,svd_scen) = robust_mse;
-                
-        
-        second_samp_err = (second_samp_approx - saved_problem.second_samp_real(36:end,:));
-        second_samp_sq_err = second_samp_err.*second_samp_err;
-        second_samp_mse = sum(sum(second_samp_sq_err))/(300*103);
-        expected_cost_err_log(init_idx/10,svd_scen) = second_samp_mse;
-    end
-end
-
-%}

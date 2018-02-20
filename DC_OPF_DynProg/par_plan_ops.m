@@ -23,7 +23,7 @@ par_cand_op_cost = cell(samp_size, 1);
 par_cand_full_cost = cell(samp_size,1);
     
 %% Run all sample plans in parallel
-for c_idx = 1:samp_size
+parfor c_idx = 1:samp_size
 % load relavent data for DC OPF for this plan
     new_line_idx = line_id.*double(samp(c_idx,:)');
     new_line_idx = nonzeros(new_line_idx);
