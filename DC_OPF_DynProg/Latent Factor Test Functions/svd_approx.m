@@ -67,7 +67,7 @@ err_percent = err_matrix./cross_val_prob.scen_op_cost;
 %problem.approx_cost;
 %problem.actual_cost;
 test_prob.mean_abs_percent_err = mean(max(abs(err_percent')));
-test_prob.sum_squares_est = norm(err_matrix, 'fro');
+test_prob.err_sum_squares = norm(err_matrix, 'fro');
 test_prob.r_squared_est = sum(diag(S(1:LF_n,1:LF_n)))/sum(diag(S));
 test_prob.obs_r_squared =1-(test_prob.err_sum_squares/norm(cross_val_prob.scen_op_cost,'fro'));
 

@@ -6,17 +6,25 @@ function status = LF_launchpad()
 %Version    Date        Who     Summary
 %1          02/19/2018  JesseB  Initial Version
 
+% To Do:
+%   Allow for easy switching between models and model sizes
+%   Store data for Crossvalidation set
+%   Develop Crossvalidation sets for different problems
+%   Finish error quantification metrics
+%   Sampling method for initial set
+
+
 
 %% Initializaion
 status = 0;
 test_rep_n = 2;
 initial_samp_list = 20:20:200;
 lat_fact_list = 1:4;
-samp_per_lf = 1:2;
+samp_per_lf_list = 1;
 
 init_samp_n = length(initial_samp_list);
 lat_fact_n = length(lat_fact_list);
-samp_per_lf_n = length(samp_per_lf);
+samp_per_lf_n = length(samp_per_lf_list);
 
 % Run crossvalidation set
 cross_val_prob.samp_n = 100; 
@@ -46,7 +54,7 @@ for n_idx = 1:test_rep_n
 
             for s_idx = 1:samp_per_lf_n
 % Scenarios per Latent Factor
-                test_prob.samp_per = samp_per_lf(s_idx);            
+                test_prob.samp_per = samp_per_lf_list(s_idx);            
 
 % Run Tests
                 test_prob = svd_approx(test_prob, cross_val_prob);           
@@ -57,7 +65,7 @@ for n_idx = 1:test_rep_n
 
                 %approx_cost_log(n_idx, i_idx, f_idx, s_idx) = test_prob.approx_cost;
                 %observed_cost_log(n_idx, i_idx, f_idx, s_idx) = test_prob.actual_cost;
-                err_ss_log(n_idx, i_idx, f_idx, s_idx) = test_prob.sum_squares_est;
+                err_ss_log(n_idx, i_idx, f_idx, s_idx) = test_prob.err_sum_squares;
                 approx_r_sq_log(n_idx, i_idx, f_idx, s_idx) = test_prob.r_squared_est;
                 observed_r_sq_log(n_idx, i_idx, f_idx, s_idx) = test_prob.obs_r_squared;
             end
