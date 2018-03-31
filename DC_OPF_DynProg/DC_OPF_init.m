@@ -31,6 +31,7 @@ cos_apx_data = importdata('cos_apx_data.txt');
 params.svd.scen_n = 3;
 params.svd.use_latent_fac = 0;
 
+
 %% PLS Data
 params.pls.interaction = 0;
 params.pls.line_samp_n = 5000000;
@@ -47,6 +48,7 @@ params.max_new_lines = 23;
 params.line_budget = 150;
 params.initial_samp_n = 200;
 params.refine_samp_n = 300;
+params.maxz = 20;
 
 %% Scenario Initialization
 params.scen.n = size(bus_data.data,2);
