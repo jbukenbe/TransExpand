@@ -16,11 +16,13 @@ function problem = dyn_pls_demo()
 %9          12/03/2017  JesseB  Added SVD approximation first version
 
 %% Initialize Data
-% set problem run list
+% set problem run list, only used when testing with different numbers of
+% lines in the 30 bus case
 problem_size_run_list = [196,50, 45,40,35,30];
 
-% read input data files
+
 for run_idx = 1:1
+% read input data files
 init_time = tic;
 problem.z_idx = 1;  z_idx=1;
 problem.problem_size = problem_size_run_list(run_idx);
@@ -57,7 +59,7 @@ problem.params.svd.filler_scen = setdiff(1:problem.params.scen.n,problem.params.
 problem.params.svd.good_plan_threshold = min(problem.cand_full_cost);
 
 %% Loop Through PLS fits
-while problem.z_idx < 200  
+while problem.z_idx < problem.params.maxz 
     %% Update SVD info
     problem.params.svd.good_plan_threshold = min(problem.cand_op_cost)*1.05;
     
