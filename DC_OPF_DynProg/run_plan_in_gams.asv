@@ -1,0 +1,40 @@
+function problem = run_plan_in_gams(problem)
+% this function takes the problem input from matlab and formats it to run
+% the opf problem in gams and output the cost from each scenario
+
+%History            
+%Version    Date        Who     Summary
+%1          03/09/2018  JesseB  Initial Version
+
+
+%% Initialize Data
+candidate_plan = problem.lines;
+scens = problem.scen;
+
+
+%% Format Sets for GAMS
+% set string creaton function
+get_uel = (@(s,v) strcat(s,strsplit(num2str(v))));
+
+% subset of scenarios to run
+subs.name='subs';
+subs.uels = get_uel('s',1:scens);
+
+% subset of lines to include in candidate plan
+lines.name = 'lines';
+lines.uels = get_uel('l',1:candidate_plan);
+
+
+%% Run GAMS Optimiazation
+filename = ['MtoG', '.gdx'];
+wgdx(filename, subs, lines);
+system 'gams "OPF_file" lo=3'
+
+%% Get GAMS Output
+gams_out.name='scen_cost';
+gams_out.form='sparse';
+output = rgdx('results',gams_out);
+
+problem.scen_op_cost = output.val;
+    
+end

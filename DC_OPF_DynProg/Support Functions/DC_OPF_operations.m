@@ -7,6 +7,9 @@ function [op_cost, x]   = DC_OPF_operations(params, dec_lines, scen)
 %1          09/09/2017  JesseB  Initial version updated from old files
 %2          09/10/2017  JesseB  Debugged and finalized, program now works
 %3          09/10/2017  JesseB  Added power flow line limits
+%4          11/01/2017  JesseB  Backward Compatable with m2016 for HPC
+%5          02/19/2018  JesseB  Initial update for efficient integer lines
+
 
 %% Data Initialization
 theta_lim = params.theta_lim;
@@ -19,8 +22,10 @@ cos_n = params.line.loss.n;
 %% Cost Vector
 % Create operating cost segment
 c_gen = params.gen.op_cost(:,scen)';
+
 % Create power not served cost segment
 c_pns = params.cpns(ones(bus_n,1))';
+
 % Merge into full cost vector
 c_theta = zeros(1,bus_n);
 c_loss = zeros(1,line_n);
@@ -42,12 +47,14 @@ A_load_theta = zeros(bus_n);
 for l_idx = 1:line_n
     i = params.cand.from_to(l_idx,1);
     j = params.cand.from_to(l_idx,2);
-    A_load_theta(i,i) = A_load_theta(i,i) - 133/params.cand.imp(l_idx);
-    A_load_theta(i,j) = A_load_theta(i,j) + 133/params.cand.imp(l_idx);
-    A_load_theta(j,j) = A_load_theta(j,j) - 133/params.cand.imp(l_idx);
-    A_load_theta(j,i) = A_load_theta(j,i) + 133/params.cand.imp(l_idx);
+    k = params.cand.per_corridor(l_idx);
+    A_load_theta(i,i) = A_load_theta(i,i) - k*133/params.cand.imp(l_idx);
+    A_load_theta(i,j) = A_load_theta(i,j) + k*133/params.cand.imp(l_idx);
+    A_load_theta(j,j) = A_load_theta(j,j) - k*133/params.cand.imp(l_idx);
+    A_load_theta(j,i) = A_load_theta(j,i) + k*133/params.cand.imp(l_idx);
 end
 
+    
 % line loss matrix segment
 A_load_loss = zeros(bus_n, line_n);
 for l_idx = 1:line_n
@@ -56,7 +63,7 @@ for l_idx = 1:line_n
 end
 % b vector
 b_load= -params.bus.load(:,scen);
-
+    
 
 %% Line Loss Constraints
 %generation and pns segments are all zeros
@@ -71,9 +78,10 @@ for l_idx =1:l_idx
     imp = params.cand.imp;
     i = params.cand.from_to(l_idx,1);
     j = params.cand.from_to(l_idx,2);
+    k = params.cand.per_corridor(l_idx);
     for k_idx = 1:cos_n
-        const = params.line.loss.const(k_idx)*(2*res(l_idx)/(res(l_idx)^2 +imp(l_idx)^2));
-        slope = params.line.loss.slope(k_idx);
+        const = k*params.line.loss.const(k_idx)*(2*res(l_idx)/(res(l_idx)^2 +imp(l_idx)^2));
+        slope = k*params.line.loss.slope(k_idx);
         loss_coef = slope*(2*res(l_idx)/(res(l_idx)^2 +imp(l_idx)^2))*(1000/133);
         a_idx = (l_idx-1)*cos_n+(k_idx-1)+1;
         A_loss_theta(a_idx, i)=  loss_coef;
@@ -128,7 +136,7 @@ A = [A_load_gen, A_load_pns, A_load_theta, A_load_loss;...
     A_flow_gen, A_flow_pns, A_flow_theta, A_flow_loss];
 b = [b_load; b_loss; b_flow];
 options = optimoptions('linprog','Algorithm','dual-simplex','Display','none','OptimalityTolerance',1.0000e-07);
-[x, op_cost] = linprog(c, A, b,[],[], lb, ub, options);
+[x, op_cost] = linprog(c, A, b,[],[], lb, ub,[], options);
 
 end
 
