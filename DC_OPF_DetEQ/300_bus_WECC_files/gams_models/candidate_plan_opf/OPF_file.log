@@ -1,0 +1,136 @@
+--- Job OPF_file Start 04/07/18 10:12:09 24.5.6 r55090 WEX-WEI x86 64bit/MS Windows
+GAMS 24.5.6   Copyright (C) 1987-2015 GAMS Development. All rights reserved
+Licensee: Medium MUD - 10 User License                   G170505:1033AO-GEN
+          Penn State University, John & Willie Leone Dept of Energy DC11293
+          License for teaching and research at degree granting institutions
+          License_Admin:_Mort_Webster,_mort@psu.edu________________________
+--- Starting compilation
+--- OPF_file.gms(14) 2 Mb
+--- .WECC_Gams.txt(15) 4 Mb
+--- ..WECC_gen_loc_data.txt(983) 4 Mb
+--- .WECC_Gams.txt(26) 4 Mb
+--- ..WECC_gen_data.txt(983) 4 Mb
+--- .WECC_Gams.txt(27) 4 Mb
+--- ..WECC_line_data.txt(708) 4 Mb
+--- .WECC_Gams.txt(32) 4 Mb
+--- GDXin=C:\Users\Jesse Bukenberger\Desktop\LF_test\model_data\MtoG.gdx
+--- .WECC_Gams.txt(70) 4 Mb
+--- OPF_file.gms(98) 4 Mb
+--- Starting execution: elapsed 0:00:00.024
+--- OPF_file.gms(2833) 6 Mb
+--- Generating LP model opf
+--- OPF_file.gms(2836) 11 Mb
+---   5,953 rows  19,585 columns  43,753 non-zeroes
+--- Executing CPLEX: elapsed 0:00:00.095
+
+IBM ILOG CPLEX   24.5.6 r55090 Released Nov 27, 2015 WEI x86 64bit/MS Windows 
+--- GAMS/Cplex licensed for continuous and discrete problems.
+Cplex 12.6.2.0
+
+Reading parameter(s) from "C:\Users\Jesse Bukenberger\Desktop\LF_test\model_data\cplex.opt"
+>>  lpmethod 4
+Finished reading from "C:\Users\Jesse Bukenberger\Desktop\LF_test\model_data\cplex.opt"
+Reading data...
+Starting Cplex...
+Space for names approximately 0.62 Mb
+Use option 'names no' to turn use of names off
+Tried aggregator 1 time.
+LP Presolve eliminated 7 rows and 8779 columns.
+Aggregator did 930 substitutions.
+Reduced LP has 5016 rows, 9876 columns, and 23508 nonzeros.
+Presolve time = 0.02 sec. (11.28 ticks)
+Parallel mode: using up to 4 threads for barrier.
+Number of nonzeros in lower triangle of A*A' = 27570
+Using Approximate Minimum Degree ordering
+Total time for automatic ordering = 0.00 sec. (2.30 ticks)
+Summary statistics for Cholesky factor:
+  Threads                   = 4
+  Rows in Factor            = 5016
+  Integer space required    = 16362
+  Total non-zeros in factor = 106338
+  Total FP ops to factor    = 2867634
+ Itn      Primal Obj        Dual Obj  Prim Inf Upper Inf  Dual Inf Inf Ratio
+   0  1.3337605e+012 -8.9862140e+010 5.07e+006 7.34e+006 7.32e+006 1.00e+000
+   1  1.0592199e+012 -9.9799024e+010 4.14e+006 6.00e+006 6.44e+006 2.27e-007
+   2  1.0593020e+012 -9.9750771e+010 4.14e+006 6.00e+006 6.44e+006 2.27e-007
+   3  1.0464643e+012 -9.9869909e+010 4.11e+006 5.95e+006 6.44e+006 2.28e-007
+   4  8.8018324e+011 -1.0132756e+011 3.53e+006 5.12e+006 6.18e+006 1.82e-007
+   5  5.2624932e+011 -1.0297177e+011 2.27e+006 3.28e+006 4.41e+006 8.97e-008
+   6  5.5785323e+010 -1.4650965e+010 2.54e+005 3.68e+005 4.91e+005 7.75e-007
+   7  4.0154158e+009 -2.0748990e+009 1.89e+004 2.74e+004 6.50e+004 5.59e-006
+   8  3.5017599e+009 -1.8375894e+009 1.68e+004 2.43e+004 5.51e+004 6.02e-006
+   9  7.9192933e+008 -4.9202488e+008 4.04e+003 5.85e+003 1.32e+004 2.25e-005
+  10  2.0460469e+008 -2.9102942e+008 1.34e+003 1.93e+003 6.69e+003 3.50e-005
+  11  1.0697609e+008 -1.2843011e+008 6.99e+002 1.01e+003 2.95e+003 7.65e-005
+  12  6.7396618e+007 -4.8489335e+007 4.47e+002 6.48e+002 1.07e+003 1.87e-004
+  13  3.6589234e+007 -1.2926902e+007 2.41e+002 3.49e+002 2.96e+002 5.39e-004
+  14  2.9320999e+007 -8.8240030e+006 1.89e+002 2.73e+002 2.21e+002 6.55e-004
+  15  2.3340925e+007 -3.3282403e+006 1.39e+002 2.02e+002 1.41e+002 8.83e-004
+  16  2.0347998e+007  1.4870864e+005 1.09e+002 1.58e+002 1.03e+002 1.09e-003
+  17  1.7193441e+007  2.6446151e+006 7.47e+001 1.08e+002 7.80e+001 1.32e-003
+  18  1.6258564e+007  4.2258728e+006 6.39e+001 9.19e+001 6.28e+001 1.59e-003
+  19  1.5108215e+007  5.4027265e+006 5.00e+001 7.18e+001 5.19e+001 1.86e-003
+  20  1.4807168e+007  5.6869069e+006 4.60e+001 6.59e+001 4.94e+001 1.94e-003
+  21  1.3825011e+007  7.1615674e+006 3.29e+001 4.70e+001 3.67e+001 2.51e-003
+  22  1.3444931e+007  7.9327537e+006 2.72e+001 3.88e+001 3.04e+001 2.97e-003
+  23  1.3308582e+007  8.3935549e+006 2.50e+001 3.56e+001 2.67e+001 3.33e-003
+  24  1.3052772e+007  9.0210823e+006 2.10e+001 2.97e+001 2.17e+001 4.03e-003
+  25  1.2764965e+007  9.6319779e+006 1.63e+001 2.29e+001 1.70e+001 5.05e-003
+  26  1.2668220e+007  1.0028056e+007 1.46e+001 2.04e+001 1.39e+001 6.06e-003
+  27  1.2457271e+007  1.0279522e+007 1.08e+001 1.49e+001 1.21e+001 6.91e-003
+  28  1.2392582e+007  1.0438635e+007 9.52e+000 1.30e+001 1.09e+001 7.60e-003
+  29  1.2329850e+007  1.1324078e+007 8.24e+000 1.12e+001 4.54e+000 1.73e-002
+  30  1.2179120e+007  1.1449218e+007 5.51e+000 7.18e+000 3.56e+000 2.12e-002
+  31  1.2077543e+007  1.1576888e+007 3.14e+000 3.70e+000 2.69e+000 2.74e-002
+  32  1.2031883e+007  1.1903251e+007 1.40e+000 1.15e+000 6.68e-001 1.05e-001
+  33  1.2017852e+007  1.1973075e+007 7.54e-001 1.52e-001 2.53e-001 2.76e-001
+  34  1.2016922e+007  1.2011526e+007 6.86e-001 2.36e-002 3.03e-002 2.46e+000
+  35  1.2016453e+007  1.2015743e+007 6.74e-001 3.26e-003 3.97e-003 1.92e+001
+  36  1.2016368e+007  1.2016353e+007 6.73e-001 1.05e-004 8.27e-005 1.05e+003
+  37  1.2016365e+007  1.2016365e+007 6.73e-001 1.32e-008 4.30e-006 7.20e+006
+  38  1.2016365e+007  1.2016365e+007 6.73e-001 5.48e-010 3.33e-006 7.14e+010
+Barrier time = 0.27 sec. (139.81 ticks)
+Parallel mode: deterministic, using up to 4 threads for concurrent optimization.
+
+Dual crossover.
+  Dual:  Fixing 1269 variables.
+     1268 DMoves:  Infeasibility 1.75521290e-009  Objective 1.20163646e+007
+     1011 DMoves:  Infeasibility 1.58721398e-009  Objective 1.20163646e+007
+      783 DMoves:  Infeasibility 2.22685115e-009  Objective 1.20165153e+007
+      607 DMoves:  Infeasibility 4.22077135e-009  Objective 1.20165153e+007
+      437 DMoves:  Infeasibility 1.83642267e-007  Objective 1.20331240e+007
+      290 DMoves:  Infeasibility 3.38878847e-008  Objective 1.20331240e+007
+      155 DMoves:  Infeasibility 1.80121174e-006  Objective 1.20331240e+007
+       20 DMoves:  Infeasibility 3.05594116e-007  Objective 1.20820465e+007
+        0 DMoves:  Infeasibility 0.00000000e+000  Objective 1.20983570e+007
+  Dual:  Pushed 6, exchanged 1258.
+  Primal:  Fixing 39 variables.
+       38 PMoves:  Infeasibility 2.95990163e+006  Objective 1.29595118e+007
+        0 PMoves:  Infeasibility 2.95428990e+006  Objective 1.29267698e+007
+  Primal:  Pushed 0, exchanged 39.
+
+Iteration log . . .
+Iteration:     1   Dual objective     =      12098387.168260
+Reinitializing dual norms . . .
+
+Dual simplex solved model.
+
+Markowitz threshold set to 0.1
+Total crossover time = 0.20 sec. (176.56 ticks)
+
+Total time on 4 threads = 0.48 sec. (328.07 ticks)
+LP status(1): optimal
+Cplex Time: 0.48sec (det. 328.08 ticks)
+
+Optimal solution found.
+Simplex iterations after crossover:  43
+
+Objective :    12255570.553690
+
+--- Restarting execution
+--- OPF_file.gms(2836) 5 Mb
+--- Reading solution for model opf
+--- OPF_file.gms(2842) 6 Mb
+--- GDX File C:\Users\Jesse Bukenberger\Desktop\LF_test\model_data\results.gdx
+*** Status: Normal completion
+--- Job OPF_file.gms Stop 04/07/18 10:12:10 elapsed 0:00:00.916
