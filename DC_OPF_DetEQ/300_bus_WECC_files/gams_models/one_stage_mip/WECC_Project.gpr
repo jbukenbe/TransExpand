@@ -1,0 +1,44 @@
+[PROJECT]
+
+[RP:UNTITLED_1]
+1=
+
+[RP:TRNSPORT]
+1=
+
+[RP:UNITCOMMITMENT]
+1=
+
+[RP:TRIALIMPORTDATA]
+1=
+
+[RP:TRANSMISSION_EXP_MIP]
+1=
+
+[RP:MASTEROPF]
+1=
+
+[RP:OPF_FILE]
+1=
+
+[RP:DCOPF]
+1=
+
+[MRUFILES]
+1=C:\Users\Jesse Bukenberger\Desktop\Bukenberger WECC_old\OPF_file.gms
+2=C:\Users\Jesse Bukenberger\Documents\GitHub\TransExpand\DC_OPF_DetEQ\MasterOPF.gms
+3=C:\Users\Jesse Bukenberger\Desktop\Bukenberger WECC\transmission_exp_MIP.gms
+4=C:\Users\Jesse Bukenberger\Desktop\Bukenberger WECC\OPF_file.lst
+5=C:\Users\Jesse Bukenberger\Desktop\Wecc_300\Wecc_300\TrialImportData.gms
+6=C:\Users\Jesse Bukenberger\Desktop\Wecc_300\Wecc_300\UnitCommitment.gms
+7=C:\Users\Jesse Bukenberger\Desktop\Wecc_300\Wecc_300\trnsport.gms
+
+[OPENWINDOW_1]
+FILE0=C:\Users\Jesse Bukenberger\Desktop\LF_test\model_data\OPF_file.gms
+FILE1=C:\Users\Jesse Bukenberger\Desktop\Wecc_300\Wecc_300\DCOPF.gms
+FILE2=C:\Users\Jesse Bukenberger\Desktop\LF_test\model_data\OPF_file.gms
+MAXIM=0
+TOP=-8
+LEFT=52
+HEIGHT=651
+WIDTH=1321

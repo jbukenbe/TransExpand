@@ -5,7 +5,7 @@ function problem = LF_array_call(array_id)
 %History            
 %Version    Date        Who     Summary
 %1          04/03/2018  JesseB  Initial Version
-%2          05/22/2018  JesseB  Broke for testing new GAMS model feeders
+%2          05/22/2018  J
 
 %% User Defined Settings
 

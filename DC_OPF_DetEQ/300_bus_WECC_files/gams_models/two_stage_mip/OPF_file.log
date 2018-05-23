@@ -1,0 +1,96 @@
+--- Job OPF_file Start 05/22/18 15:27:23 24.5.6 r55090 WEX-WEI x86 64bit/MS Windows
+GAMS 24.5.6   Copyright (C) 1987-2015 GAMS Development. All rights reserved
+Licensee: Medium MUD - 10 User License                   G170505:1033AO-GEN
+          Penn State University, John & Willie Leone Dept of Energy DC11293
+          License for teaching and research at degree granting institutions
+          License_Admin:_Mort_Webster,_mort@psu.edu________________________
+--- Starting compilation
+--- OPF_file.gms(14) 2 Mb
+--- .cand_WECC_Gams.txt(15) 4 Mb
+--- ..WECC_gen_loc_data.txt(983) 4 Mb
+--- .cand_WECC_Gams.txt(26) 4 Mb
+--- ..WECC_gen_data.txt(983) 4 Mb
+--- .cand_WECC_Gams.txt(27) 4 Mb
+--- ..WECC_line_data.txt(708) 4 Mb
+--- .cand_WECC_Gams.txt(32) 4 Mb
+--- GDXin=C:\Users\Jesse Bukenberger\Documents\GitHub\TransExpand\DC_OPF_DetEQ\300_bus_WECC_files\gams_models\one_stage_mip\MtoG.gdx
+--- .cand_WECC_Gams.txt(70) 4 Mb
+--- OPF_file.gms(98) 4 Mb
+--- Starting execution: elapsed 0:00:00.018
+--- OPF_file.gms(2833) 6 Mb
+--- Generating LP model opf
+--- OPF_file.gms(2836) 11 Mb
+---   6,061 rows  19,693 columns  44,293 non-zeroes
+--- Executing CPLEX: elapsed 0:00:00.076
+
+IBM ILOG CPLEX   24.5.6 r55090 Released Nov 27, 2015 WEI x86 64bit/MS Windows 
+--- GAMS/Cplex licensed for continuous and discrete problems.
+Cplex 12.6.2.0
+
+Reading parameter(s) from "C:\Users\Jesse Bukenberger\Documents\GitHub\TransExpand\DC_OPF_DetEQ\300_bus_WECC_files\gams_models\one_stage_mip\cplex.opt"
+>>  lpmethod 6
+Finished reading from "C:\Users\Jesse Bukenberger\Documents\GitHub\TransExpand\DC_OPF_DetEQ\300_bus_WECC_files\gams_models\one_stage_mip\cplex.opt"
+Reading data...
+Starting Cplex...
+Space for names approximately 0.67 Mb
+Use option 'names no' to turn use of names off
+Parallel mode: deterministic, using up to 4 threads for concurrent optimization.
+Tried aggregator 1 time.
+LP Presolve eliminated 7 rows and 8779 columns.
+Aggregator did 930 substitutions.
+Reduced LP has 5124 rows, 9984 columns, and 24036 nonzeros.
+Presolve time = 0.02 sec. (12.06 ticks)
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =       4076015.718500
+Perturbation started.
+Iteration:   101   Dual objective     =       4076015.718500
+Iteration:   504   Dual objective     =       4076015.996206
+Iteration:   767   Dual objective     =       4076016.203411
+Iteration:  1015   Dual objective     =       4076016.390116
+Iteration:  1212   Dual objective     =       4076016.581798
+Iteration:  1408   Dual objective     =       4076016.790226
+Iteration:  1607   Dual objective     =       4097490.274133
+Iteration:  1795   Dual objective     =       4098513.040475
+Iteration:  1957   Dual objective     =       4121530.680219
+Markowitz threshold set to 0.1
+Iteration:  2151   Dual objective     =       4141512.399739
+Iteration:  2337   Dual objective     =       4150443.015196
+Iteration:  2507   Dual objective     =       4150608.975093
+Iteration:  2727   Dual objective     =       4151131.265189
+Iteration:  2892   Dual objective     =       4151215.845932
+Iteration:  3050   Dual objective     =       4164378.318218
+Iteration:  3210   Dual objective     =       4164971.944845
+Iteration:  3389   Dual objective     =       4274848.057629
+Iteration:  3539   Dual objective     =       4282954.018175
+Iteration:  3718   Dual objective     =       4283475.252881
+Iteration:  3889   Dual objective     =       4318489.221726
+Iteration:  4035   Dual objective     =       4374788.169005
+Iteration:  4251   Dual objective     =       4415333.993376
+Iteration:  4403   Dual objective     =       4538639.178459
+Iteration:  4551   Dual objective     =       4606208.704753
+Iteration:  4696   Dual objective     =       4638571.414739
+Iteration:  4863   Dual objective     =       4666729.631398
+Iteration:  5032   Dual objective     =       4679573.446963
+Iteration:  5186   Dual objective     =       4843218.694636
+Iteration:  5329   Dual objective     =       4851561.297883
+Iteration:  5456   Dual objective     =       4858816.951793
+Removing perturbation.
+Using devex.
+
+Barrier solved model.
+
+LP status(1): optimal
+Cplex Time: 0.95sec (det. 699.43 ticks)
+
+Optimal solution found.
+Objective :     5983548.965064
+
+--- Restarting execution
+--- OPF_file.gms(2836) 5 Mb
+--- Reading solution for model opf
+--- OPF_file.gms(2842) 6 Mb
+--- GDX File C:\Users\Jesse Bukenberger\Documents\GitHub\TransExpand\DC_OPF_DetEQ\300_bus_WECC_files\gams_models\one_stage_mip\results.gdx
+*** Status: Normal completion
+--- Job OPF_file.gms Stop 05/22/18 15:27:25 elapsed 0:00:01.315
