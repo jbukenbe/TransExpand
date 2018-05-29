@@ -1,4 +1,71 @@
+
+samp_size_list = [10 30 50];
+lf_size_list = [2 3 4 5 6 8 10 15 20 30 40 50 60 70 80 90 100];
+
+runs = 20;
+samp_length = length(samp_size_list);
+lf_length = length(lf_size_list);
+log_ape = cell(samp_length,lf_length,runs);
+log_ess = cell(samp_length,lf_length,runs);
+log_tot = cell(samp_length,lf_length,runs);
+log_rse = cell(samp_length,lf_length,runs);
+log_rso = cell(samp_length,lf_length,runs);
+log_prst = cell(samp_length,lf_length,runs);
+log_mc_tot = cell(samp_length,lf_length,runs);
+for t_idx = 1:runs
+prob.samp_per = 1;
+prob.params.scen.n = 8736;
+subset = [scen_op_cost(100:163,:);output];
+cross_val_prob.scen_op_cost = output;
+prob.scen_op_cost = [];
+for samp_idx = 1:samp_length
+    samp_size = samp_size_list(samp_idx);
+    if samp_idx == 1
+        prob.scen_op_cost = subset(randperm(364,samp_size),:);
+        last_samp_size = samp_size;
+    else 
+        prob.scen_op_cost = [prob.scen_op_cost;subset(randperm(364,samp_size-last_samp_size),:)];
+    end
+%% Initialize approximation tools for future use if needed
+% mean center scenario data
+prob.mean_scen_cost = mean(prob.scen_op_cost);
+A = prob.scen_op_cost - prob.mean_scen_cost;
+% select scenarios from svd latent factors
+[U, S, V] = svd(A);
+prob.S = S;
+prob.V = V;
+    
+    for lf_idx = 1:lf_length
+        if lf_size_list(lf_idx) <= samp_size
+            par_prob = prob;
+            par_prob.LF_n = lf_size_list(lf_idx);
+        else
+            par_prob = prob;
+            par_prob.LF_n = samp_size;
+            par_prob.samp_per = lf_size_list(lf_idx)/samp_size;
+        end           
+            
+        par_prob = svd_approx(par_prob, cross_val_prob);
+        log_ape{samp_idx, lf_idx,t_idx} = par_prob.mean_abs_percent_err; 
+        log_ess{samp_idx, lf_idx,t_idx} = par_prob.err_sum_squares;
+        log_tot{samp_idx, lf_idx,t_idx} = par_prob.tot_abs_percent_err;
+        log_rse{samp_idx, lf_idx,t_idx} = par_prob.r_squared_est;
+        log_rso{samp_idx, lf_idx,t_idx} = par_prob.obs_r_sq2;
+        log_prst{samp_idx, lf_idx,t_idx} = par_prob.tot_r_sq2;
+        log_mc_tot{samp_idx, lf_idx,t_idx} = par_prob.mc_tot_percent_err;
+    end
+end
+end
+log_a = cell2mat(log_ape);
+log_e = cell2mat(log_ess);
+log_ro = cell2mat(log_rso);
+log_re = cell2mat(log_rse);
+log_tr = cell2mat(log_prst);
+log_t = cell2mat(log_tot);
+log_tmc = cell2mat(log_mc_tot);
 %% Load Data
+
+%{
 load('20_line_output.mat');
 problem.params = DC_OPF_init;
 
@@ -87,5 +154,5 @@ title('Avg Rank of Best Found Plan'); xlabel('Initial Sample n'); ylabel('Rank')
 subplot (2,2,4)
 plot(samp_n_list, avg_best_qual);
 title('Avg Cost of Best Found Plan'); xlabel('Initial Sample n'); ylabel('Cost');
-
+%}
 
