@@ -60,7 +60,7 @@ eSubFun(subs)..                        zs(subs) =e= sum(g, pVarCost(g,subs) * x(
 eDemand(i, subs)..                     sum(g$ig(i,g), x(g, subs) - sg(g,subs))
                                            - sum((l,j) $ ii(l,i,j), p(l,i,j,subs))
                                            + sum((l,j) $ ii(l,j,i), p(l,j,i, subs))
-                                           =g= pLoad(i, subs) - pns(i, subs);
+                                           =e= pLoad(i, subs) - pns(i, subs);
 
 *eDemand(i, subs)..                      sum(g$ig(i,g), x(g, subs) - sg(g,subs))
 *                                            - sum((lines,j) $ ii(lines,i,j), p(lines,i,j,subs)+loss(lines,i,j,subs)/2)
@@ -97,10 +97,10 @@ Model opf /all/;
 
 
 * limit run time
-option ResLim = 200;
+option ResLim = 500;
 
 * optimality gap
-option optCR = .01;
+option optCR = .05;
 
 * print solution file
 option solprint = on;

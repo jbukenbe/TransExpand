@@ -18,7 +18,8 @@ bus_n = problem.bus_n;
 gen_n = problem.gen_n;
 non_dispatch_gen = problem.non_dispatch_gen;
 load_growth = problem.load_growth;
-scen_n = 6;
+scen_n = 24;
+%scen_list = 1:2;
 scen_list = randperm(8736, scen_n);
 scen_w = ones(scen_n,1).*8760./scen_n;
 %scen_list = problem.scen_list;
@@ -75,7 +76,7 @@ pRenew.val = max(0,pRenew.val(r_gen_idx,:));
 g_diff = length(non_dispatch_gen)-length(r_gen_idx);
 pRenew.val = [zeros(g_diff, scen_n);pRenew.val];
 % duct tape correction for hydro data being too large
-pRenew.val(1:107,:) = pRenew.val(1:107,:).*.5;
+pRenew.val(1:107,:) = pRenew.val(1:107,:).*.25;
 
 % Parameter for gen costs over scenarios
 pVarCost.name = 'pVarCost';
@@ -113,6 +114,6 @@ lines_built.name='lines_built';
 lines_built.form='sparse';
 lines_built.uels = {lines.uels,bus.uels,bus.uels};
 line_output = rgdx('results',lines_built);
-problem.lines = line_output.val(:,1);
+problem.lines = line_output.val(:,1)-1;
 
 end

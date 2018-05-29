@@ -17,17 +17,17 @@ nd(g)		Non-dispatchable generators	/g332*g980/
 ii(l,i,i)	Buses connected in the graph
 pos_scen(t,s)	Scenarios possible at time stage t
 $include	"WECC_gen_loc_data.txt"
-$include	"WECC_scen_stage_data.txt"
+$include	"WECC_scen_time_data.txt"
 ;
 
 ALIAS(i,j);
 
 Parameters
 psubs_w(s)	weight of scenario subset for expectation calculation
-psubh_w(h)		weight of hour subset for expectation calculation
-pload(i,s)	load at each bus scenario pair
-pRenew(nd,s)	generation at each non_dispatchable generator pair
-pVarCost(g,s)   variable cost for operating generator g
+psubh_w(h)	weight of hour subset for expectation calculation
+pload(i,t,s,h)		load at each bus scenario pair
+pRenew(nd,t,s,h)	generation at each non_dispatchable generator pair
+pVarCost(g,t,s,h)   	variable cost for operating generator g
 ;
 
 $include	"WECC_gen_data.txt"
