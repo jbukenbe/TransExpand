@@ -1,0 +1,13 @@
+ts(t, s)         scenarios that occur at time t
+/
+t1 	.	s1
+t2 	.	s1
+t2 	.	s2
+t2 	.	s3
+t2 	.	s4
+t2	.	s5
+t2	.	s6
+t2	.	s7
+t2	.	s8
+t2	.	s9
+/
