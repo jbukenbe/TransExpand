@@ -1,4 +1,4 @@
-function problem = run_tep_gams(problem)
+function problem = run_bender_tep_gams(problem)
 % this function takes the problem input for the transmission expansion
 % problem and formulates it into a GAMS MIP that solves the single stage
 % stochastic TEP. A scenario subset and their weights are needed for the
@@ -7,8 +7,8 @@ function problem = run_tep_gams(problem)
 
 %History            
 %Version    Date        Who     Summary
-%1          05/18/2018  JesseB  Adapted from run_opf_gams
-%2          05/18/2018  JesseB  Successful run with GAMS
+%1          06/05/2018  JesseB  Adapted from run_opf_gams
+
 
 
 %% Initialize Data
@@ -24,9 +24,14 @@ scen_list = randperm(8736, scen_n);
 scen_w = ones(scen_n,1).*8760./scen_n;
 psub_m = zeros(scen_n,1);
 
-scen_list = [380 1231 8581 1256 8586 8322 466 5321 4818 932 1591];
-scen_w = [1 209.9 155.2 40.3 229.3 1 61 1601.6 668.6 78 561.2];
-psub_m = [12879000 10721000 7323000 15696000 9258000 17014000 10496000 8699000 7014000 7878000 6522000];
+scen_list = [380, 498, 1231, 1232, 5321, 7965];
+scen_w = [191.4, -254.2, 246.7, 171.5, 1950.9, 116.9];
+psub_m = [13081000, 6284000, 10771000, 14967000, 8742000, 6010000];
+
+
+%scen_list = [380 1231 8581 1256 8586 8322 466 5321 4818 932 1591];
+%scen_w = [1 209.9 155.2 40.3 229.3 1 61 1601.6 668.6 78 561.2];
+%psub_m = [12879000 10721000 7323000 15696000 9258000 17014000 10496000 8699000 7014000 7878000 6522000];
 %{
 scen_list = [2049
 764
@@ -175,8 +180,9 @@ pVarCost.val = pVarCost.val + repmat(gen_data.gen_cost.vom,1,scen_n);
 %% Run GAMS Optimiazation
 filename = ['MtoG', '.gdx'];
 wgdx(filename, subs, psub_w, psub_mean, pload, pRenew, pVarCost);
-system ('gams "transmission_exp_MIP" lo=3');
-
+tic
+system ('gams "tep_bender" lo=2');
+toc
 
 %% Get GAMS Output
 % scenario costs in optimal plan
@@ -199,5 +205,4 @@ lines_built.form='sparse';
 lines_built.uels = {lines.uels,bus.uels,bus.uels};
 line_output = rgdx('results',lines_built);
 problem.lines = line_output.val(:,1)-1;
-
 end

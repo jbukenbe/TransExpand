@@ -52,7 +52,7 @@ eCandCapHi(cand,i,j,subs)              Line capacity upper bound in candidate li
 eCandCapLow(cand,i,j,subs)             Line capacity lower bound in candidate lines
 ;
 
-eObFun..                               z =e= sum(subs, psub_w(subs)*zs(subs))+ sum((cand,i,j)$ii(cand,i,j),y(cand,i,j)*dtl(cand,i,j,'cost'));
+eObFun..                               z =e= (sum(subs, psub_w(subs)*(zs(subs)- psub_mean(subs))))/8760+ sum((cand,i,j)$ii(cand,i,j),y(cand,i,j)*dtl(cand,i,j,'cost'));
 
 eSubFun(subs)..                        zs(subs) =e= sum(g, pVarCost(g,subs) * x(g, subs) + csg * sg(g, subs))
                                            + sum(i, pns(i, subs) * cpns);
@@ -97,10 +97,10 @@ Model opf /all/;
 
 
 * limit run time
-option ResLim = 500;
+option ResLim = 100;
 
 * optimality gap
-option optCR = .05;
+option optCR = .01;
 
 * print solution file
 option solprint = on;

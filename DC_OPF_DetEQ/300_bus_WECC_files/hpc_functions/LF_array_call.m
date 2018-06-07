@@ -34,14 +34,14 @@ output.scen_op_cost = zeros(8736,line_runs);
 
 %% Set Line data for run
 for l_idx = 1:line_runs
-    problem = run_tep_gams(problem);
-    problem.new_lines = problem.lines+653;
-    %problem.new_lines = double(line_data.samp(run_list(l_idx,array_id),:)).*(655:705);
-    %problem.new_lines(problem.new_lines == 0) = [];
-    problem.candidate_plan = [problem.existing_plan,problem.new_lines'];        
+    problem = run_bender_tep_gams(problem);
+%    problem.new_lines = problem.lines+654;
+    problem.new_lines = double(line_data.samp(run_list(l_idx,array_id),:)).*(655:705);
+    problem.new_lines(problem.new_lines == 0) = [];
+    problem.candidate_plan = [problem.existing_plan,problem.new_lines];        
     
 %% Run Plan          
-    for w_idx = 1:52
+    for w_idx = 1:1
         problem.scen_offset = (w_idx-1)*168+1;
         problem = run_opf_gams(problem);   
 

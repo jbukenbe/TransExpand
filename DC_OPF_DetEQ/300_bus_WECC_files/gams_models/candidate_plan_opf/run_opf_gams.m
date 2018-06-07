@@ -38,7 +38,7 @@ bus.uels = get_uel('i', 1:bus_n);
     gen_data = load('gen_cost_data.mat');  
     
 scen_op_cost = zeros(168,1);
-for d_idx = 1:28
+for d_idx = 1:1
 tic
     scen_r = (scen_offset+scen_n*(d_idx-1)):(scen_offset+scen_n*d_idx - 1);
     storage_r = (scen_n*(d_idx-1)+1):scen_n*d_idx;

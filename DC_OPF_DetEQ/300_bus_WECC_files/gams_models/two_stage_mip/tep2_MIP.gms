@@ -45,13 +45,23 @@ Equations
 eObFun                                      Objective Function
 eSubFun(t, subs, subh)                      Objective function at each scenario
 eLineExist(cand,i,j,t,subs)                 Lines built must exist in future time stages CURRENTLY ONLY WORKS FOR 2 INVESMTENT STAGES
-eQuickFix(cand,i,j,t,subs)                  First time stage has only one scenario
+*eQuickFix(cand,i,j,t,subs)                  First time stage has only one scenario
 eDemand(i, t, subs, subh)                   Demand met from generation and power inflow
 ePowerFlow(built,i,j,t, subs, subh)         DC power flow in existing lines
 eCandLineFlowHi(cand,i,j,t,subs, subh)      DC power flow upper bound in candidate lines
 eCandLineFlowLow(cand,i,j,t,subs, subh)     DC power flow lower bound in candidate lines
 eCandCapHi(cand,i,j,t, subs, subh)          Line capacity upper bound in candidate lines
 eCandCapLow(cand,i,j,t, subs, subh)         Line capacity lower bound in candidate lines
+
+eCandLineFlowHit(cand,i,j,t,subs, subh)      DC power flow upper bound in candidate lines
+eCandLineFlowLowt(cand,i,j,t,subs, subh)     DC power flow lower bound in candidate lines
+eCandCapHit(cand,i,j,t, subs, subh)          Line capacity upper bound in candidate lines
+eCandCapLowt(cand,i,j,t, subs, subh)         Line capacity lower bound in candidate lines
+
+eCandLineFlowHig(cand,i,j,t,subs, subh)      DC power flow upper bound in candidate lines
+eCandLineFlowLowg(cand,i,j,t,subs, subh)     DC power flow lower bound in candidate lines
+eCandCapHig(cand,i,j,t, subs, subh)          Line capacity upper bound in candidate lines
+eCandCapLowg(cand,i,j,t, subs, subh)         Line capacity lower bound in candidate lines
 ;
 
 eObFun..                               z =e= sum(t,.5*sum(subs,psubs_w(subs)*(sum(subh, psubh_w(subh)*zh(t,subs,subh))
@@ -64,11 +74,11 @@ eSubFun(t,subs,subh)..                 zh(t,subs,subh)
 
 
 eLineExist(cand,i,j,t,subs)$((ORD(t)>1)
-           and ii(cand,i,j))..          y(cand,i,j,t,subs) =g= y(cand,i,j,t-1,subs);
+           and ii(cand,i,j))..          y(cand,i,j,t,subs) =g= y(cand,i,j,t-1,'s1');
 
 
-eQuickFix(cand,i,j,t,subs)$((ORD(t) = 1)
-          and ii(cand,i,j))..           y(cand,i,j,t,subs) =e= y(cand,i,j,t,'s1');
+*eQuickFix(cand,i,j,t,subs)$((ORD(t) = 1)
+*          and ii(cand,i,j))..           y(cand,i,j,t,subs) =e= y(cand,i,j,t,'s1');
 
 
 eDemand(i, t,subs,subh)..              sum(g$ig(i,g), x(g,t,subs,subh) - sg(g,t,subs,subh))
@@ -83,12 +93,45 @@ eDemand(i, t,subs,subh)..              sum(g$ig(i,g), x(g,t,subs,subh) - sg(g,t,
 
 
 ePowerFlow(built,i,j,t,subs,subh)$ii(built,i,j)..            p(built,i,j, t,subs,subh) =e= 1000*(theta(i, t,subs,subh) - theta(j, t,subs,subh)) * (dtl(built,i,j,'s'));
-eCandLineFlowHi(cand,i,j,t,subs,subh)$ii(cand,i,j)..         p(cand,i,j, t,subs,subh) =l= 10000*(1-y(cand,i,j,t,subs))+ 1000*(theta(i, t,subs,subh) - theta(j, t,subs,subh)) * (dtl(cand,i,j,'s'));
-eCandLineFlowLow(cand,i,j,t,subs,subh)$ii(cand,i,j)..        p(cand,i,j, t,subs,subh) =g= -10000*(1-y(cand,i,j,t,subs))+ 1000*(theta(i, t,subs,subh) - theta(j, t,subs,subh)) * (dtl(cand,i,j,'s'));
+$ontext
+eCandLineFlowHi(cand,i,j,t,subs,subh)$(ii(cand,i,j))..         p(cand,i,j, t,subs,subh) =l= 10000*(1-y(cand,i,j,t,subs))+ 1000*(theta(i, t,subs,subh) - theta(j, t,subs,subh)) * (dtl(cand,i,j,'s'));
+eCandLineFlowLow(cand,i,j,t,subs,subh)$(ii(cand,i,j))..        p(cand,i,j, t,subs,subh) =g= -10000*(1-y(cand,i,j,t,subs))+ 1000*(theta(i, t,subs,subh) - theta(j, t,subs,subh)) * (dtl(cand,i,j,'s'));
 
-eCandCapHi(cand,i,j,t,subs,subh)$ii(cand,i,j)..              p(cand,i,j,t,subs,subh) =l= y(cand,i,j,t,subs)*dtl(cand,i,j,'pmax');
-eCandCapLow(cand,i,j,t,subs,subh)$ii(cand,i,j)..             p(cand,i,j,t,subs,subh) =g= -y(cand,i,j,t,subs)*dtl(cand,i,j,'pmax');
+eCandCapHi(cand,i,j,t,subs,subh)$(ii(cand,i,j))..              p(cand,i,j,t,subs,subh) =l= y(cand,i,j,t,subs)*dtl(cand,i,j,'pmax');
+eCandCapLow(cand,i,j,t,subs,subh)$(ii(cand,i,j))..             p(cand,i,j,t,subs,subh) =g= -y(cand,i,j,t,subs)*dtl(cand,i,j,'pmax');
+$offtext
+eCandLineFlowHi(cand,i,j,t,subs,subh)$(ii(cand,i,j)
+and (ORD(t) = 1) )..         p(cand,i,j, t,subs,subh) =l= 10000*(1-y(cand,i,j,t,'s1'))+ 1000*(theta(i, t,subs,subh) - theta(j, t,subs,subh)) * (dtl(cand,i,j,'s'));
+eCandLineFlowLow(cand,i,j,t,subs,subh)$(ii(cand,i,j)
+and (ORD(t) = 1) )..        p(cand,i,j, t,subs,subh) =g= -10000*(1-y(cand,i,j,t,'s1'))+ 1000*(theta(i, t,subs,subh) - theta(j, t,subs,subh)) * (dtl(cand,i,j,'s'));
 
+eCandCapHi(cand,i,j,t,subs,subh)$(ii(cand,i,j)
+and (ORD(t) = 1) )..              p(cand,i,j,t,subs,subh) =l= y(cand,i,j,t,'s1')*dtl(cand,i,j,'pmax');
+eCandCapLow(cand,i,j,t,subs,subh)$(ii(cand,i,j)
+and (ORD(t) = 1) )..             p(cand,i,j,t,subs,subh) =g= -y(cand,i,j,t,'s1')*dtl(cand,i,j,'pmax');
+
+
+eCandLineFlowHit(cand,i,j,t,subs,subh)$(ii(cand,i,j)
+and (ORD(t) = 2) and (ORD(subs)<3)) ..         p(cand,i,j, t,subs,subh) =l= 10000*(1-y(cand,i,j,t,'s1'))+ 1000*(theta(i, t,subs,subh) - theta(j, t,subs,subh)) * (dtl(cand,i,j,'s'));
+eCandLineFlowLowt(cand,i,j,t,subs,subh)$(ii(cand,i,j)
+and (ORD(t) = 2) and (ORD(subs)<3))..        p(cand,i,j, t,subs,subh) =g= -10000*(1-y(cand,i,j,t,'s1'))+ 1000*(theta(i, t,subs,subh) - theta(j, t,subs,subh)) * (dtl(cand,i,j,'s'));
+
+eCandCapHit(cand,i,j,t,subs,subh)$(ii(cand,i,j)
+and (ORD(t) = 2) and (ORD(subs)<3))..              p(cand,i,j,t,subs,subh) =l= y(cand,i,j,t,'s1')*dtl(cand,i,j,'pmax');
+eCandCapLowt(cand,i,j,t,subs,subh)$(ii(cand,i,j)
+and (ORD(t) = 2) and (ORD(subs)<3))..             p(cand,i,j,t,subs,subh) =g= -y(cand,i,j,t,'s1')*dtl(cand,i,j,'pmax');
+
+
+
+eCandLineFlowHig(cand,i,j,t,subs,subh)$(ii(cand,i,j)
+and (ORD(t) = 2) and (ORD(subs)>2)) ..         p(cand,i,j, t,subs,subh) =l= 10000*(1-y(cand,i,j,t,'s4'))+ 1000*(theta(i, t,subs,subh) - theta(j, t,subs,subh)) * (dtl(cand,i,j,'s'));
+eCandLineFlowLowg(cand,i,j,t,subs,subh)$(ii(cand,i,j)
+and (ORD(t) = 2) and (ORD(subs)>2))..        p(cand,i,j, t,subs,subh) =g= -10000*(1-y(cand,i,j,t,'s4'))+ 1000*(theta(i, t,subs,subh) - theta(j, t,subs,subh)) * (dtl(cand,i,j,'s'));
+
+eCandCapHig(cand,i,j,t,subs,subh)$(ii(cand,i,j)
+and (ORD(t) = 2) and (ORD(subs)>2))..              p(cand,i,j,t,subs,subh) =l= y(cand,i,j,t,'s4')*dtl(cand,i,j,'pmax');
+eCandCapLowg(cand,i,j,t,subs,subh)$(ii(cand,i,j)
+and (ORD(t) = 2) and (ORD(subs)>2))..             p(cand,i,j,t,subs,subh) =g= -y(cand,i,j,t,'s4')*dtl(cand,i,j,'pmax');
 
 
 
@@ -109,10 +152,10 @@ Model opf /all/;
 
 
 * limit run time
-option ResLim = 3000;
+option ResLim = 1500;
 
 * optimality gap
-option optCR = .05;
+option optCR = .12;
 
 * print solution file
 option solprint = on;
