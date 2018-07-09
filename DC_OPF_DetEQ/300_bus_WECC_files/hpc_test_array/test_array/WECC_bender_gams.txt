@@ -13,9 +13,10 @@ cand(l)     	Subset of candidate lines 	/l655*l705/
 built(l)	Subset of existing lines  	/l1*l654/
 nd(g)		Non-dispatchable generators	/g332*g980/  
 ii(l,i,i)	Nodes connected in the graph
+
 $include	"WECC_gen_loc_data.txt"
 
-iter 		max benders iterations /iter1*iter200/
+iter 		max benders iterations /iter1*iter400/
 dyniter(iter)   dynamic indicator subset for completed iterations
 ;
 
@@ -23,7 +24,6 @@ ALIAS(i,j);
 
 Parameters
 psub_w(s)	weight of scenario subset for expectation calculation
-psub_mean(s)	mean of scenarios from plan sample
 pload(i,s)	load at each bus scenario pair
 pRenew(nd,s)	generation at each non_dispatchable generator pair
 pVarCost(g,s)   variable cost for operating generator g
@@ -40,7 +40,7 @@ $include	"WECC_line_data.txt"
 
 $if not set gdxin $set gdxin MtoG
 $GDXIN %gdxin%
-$LOAD  subs, psub_w, psub_mean, pload, pRenew, pVarCost
+$LOAD  subs, psub_w, pload, pRenew, pVarCost
 $GDXIN
 
 

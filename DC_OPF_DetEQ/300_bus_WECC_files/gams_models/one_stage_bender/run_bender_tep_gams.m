@@ -9,7 +9,8 @@ function problem = run_bender_tep_gams(problem)
 %Version    Date        Who     Summary
 %1          06/05/2018  JesseB  Adapted from run_opf_gams
 
-
+% TODO: Clean up for Test Run
+%       get sample data from array run
 
 %% Initialize Data
 %candidate_plan = problem.candidate_plan;
@@ -205,4 +206,23 @@ lines_built.form='sparse';
 lines_built.uels = {lines.uels,bus.uels,bus.uels};
 line_output = rgdx('results',lines_built);
 problem.lines = line_output.val(:,1)-1;
+
+
+
+
+
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
