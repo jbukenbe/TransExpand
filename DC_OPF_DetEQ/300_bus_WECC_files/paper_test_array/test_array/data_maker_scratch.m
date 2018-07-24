@@ -1,3 +1,14 @@
+for g_idx = 1:1000
+    c_idx = 0;
+    cum_cap = 0;
+    gen_level_now = gen_level(ceil(g_idx/100));
+    while cum_cap < gen_level_now
+        c_idx = c_idx +1;
+        cum_cap = cum_cap + pmx(cand_gen(gen_samp(c_idx,g_idx)));
+    end
+gens_built(g_idx) = c_idx;
+end
+
 %% K means Samples
 %stoch_data = [pload.val;pRenew.val;pVarCost.val];
 %min_s = min(stoch_data,[],2);
@@ -132,7 +143,7 @@ end
 
 
 %% Test plotting
-%}
+
 actual = mean(output,2);
 [sor,id]= sort(actual);
 for x_idx = 1:75
@@ -174,6 +185,6 @@ for x_idx = 1:75
     hold off
 legend('real','raw','positive','mc','km');
 end
-
+%}
 
     
