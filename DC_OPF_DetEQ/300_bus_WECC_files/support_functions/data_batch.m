@@ -8,14 +8,14 @@ function data_batch(filename, n)
 %1          04/04/2017  JesseB  Initial Version
 
 
-data_list = [1:25];
+data_list = [1:16];
 output = [];
 n = length(data_list);
 for n_idx = 1:n
-    data_idx = data_list(n_idx);
+    data_idx = data_list(n_idx); 
     outfile_name = sprintf('%s_%d',filename,data_idx);
     load(outfile_name);
-    output = [output;scen_op_cost'];
+    output = [output;scen_op_cost(:,1:10)'];
 end
 out_name = sprintf('%ss_1_to_%d',filename,n);
 m = matfile(out_name);

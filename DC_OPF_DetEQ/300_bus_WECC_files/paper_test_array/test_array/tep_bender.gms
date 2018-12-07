@@ -8,15 +8,14 @@ Options:
 
 History
 Version__Date____________Who_____Summary
-1        03/06/2018      JesseB  Initial Model adapted from IEEE 30 bus case
-2        05/18/2018      JesseB  Adapted to take Matlab input
+1        06/11/2018      JesseB  copy of lf_tep_bender to run simple weighted avg monte carlo or k means opt
 
 
 
 
 $offtext
 $offlisting
-$include        "WECC_Gams.txt"
+$include        "WECC_bender_gams.txt"
 
 SCALARS
 ThetaMax         Maximum value of theta [radians]   /.5/
@@ -61,9 +60,7 @@ eCandLineFlowLow(cand,i,j,subs)        DC power flow lower bound in candidate li
 eCandCapHi(cand,i,j,subs)              Line capacity upper bound in candidate lines
 eCandCapLow(cand,i,j,subs)             Line capacity lower bound in candidate lines
 ;
-eMstFun..                     zMst =e= sum((cand,i,j)$ii(cand,i,j), dtl(cand,i,j,'cost')*y(cand,i,j))
-                                     + (sum(subs, -psub_w(subs)*psub_mean(subs))+53107000000)/8760
-                                     + rec;
+eMstFun..                     zMst =e= sum((cand,i,j)$ii(cand,i,j), dtl(cand,i,j,'cost')*y(cand,i,j)) + rec;
 
 eCutFun(dyniter)..            rec =g= pBender_constant(dyniter) + sum((cand,i,j)$ii(cand,i,j), pBender_slope(dyniter,cand,i,j) * y(cand,i,j));
 
@@ -111,21 +108,21 @@ Model opf /eObFun, eSubFun, eDemand, ePowerFlow, eCandCapHi, eCandCapLow, eCandL
 
 
 * limit run time
-option ResLim = 100;
+option ResLim = 1200;
 
 * optimality gap
-option optCR = .0001;
+opf.optCR = .0001;
+master_prob.optCR = .0001
 
-* print solution file
-option solprint = on;
+* dont print solution file
+option solprint = off;
 
 * shorten output colums and rows
 option limrow = 0;
 option limcol = 0;
-option solprint = off;
 
-* run in parallel with  threads
-option threads = 4;
+* run in parallel with threads
+option threads = 10;
 
 * use Cplex solver for linear programs
 option LP = Cplex;
@@ -190,9 +187,9 @@ Loop (iter$(not done),
       Display ub,lb,gap;
 
 * Test for convergence
-      if (gap<0.001,
+      if (gap<0.0001,
           Display "converged";
-          if (gap<-0.00001,
+          if (gap<-0.0001,
               display "with error";
           );
           done = 1;
@@ -216,4 +213,4 @@ lines_built(cand,i,j)
 scen_cost(subs) = zs.l(subs);
 tot_cost = ub;
 lines_built(cand,i,j)$ii(cand,i,j) = py_best(cand,i,j);
-execute_unload 'results', scen_cost, tot_cost, lines_built;
+execute_unload 'results', scen_cost, lines_built, tot_cost, lb;
