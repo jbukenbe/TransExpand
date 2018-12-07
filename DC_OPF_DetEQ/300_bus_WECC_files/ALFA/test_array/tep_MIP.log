@@ -1,0 +1,20 @@
+--- Job tep_MIP Start 08/07/18 16:26:55 25.1.1 r66732 WEX-WEI x86 64bit/MS Windows
+GAMS 25.1.1   Copyright (C) 1987-2018 GAMS Development. All rights reserved
+Licensee: Medium MUD - 10 User License                   G180328:1010AO-GEN
+          Penn State University, John & Willie Leone Dept of Energy DC11293
+          License for teaching and research at degree granting institutions
+          License Admin: Mort Webster, mort@psu.edu                        
+--- Starting compilation
+--- tep_MIP.gms(17) 2 Mb
+--- . WECC_MIP_gams.txt(16) 4 Mb
+--- .. WECC_gen_loc_data.txt(983) 4 Mb
+--- . WECC_MIP_gams.txt(28) 4 Mb
+--- .. WECC_gen_data.txt(983) 4 Mb
+--- . WECC_MIP_gams.txt(29) 4 Mb
+--- .. WECC_line_data.txt(708) 4 Mb
+--- . WECC_MIP_gams.txt(34) 4 Mb
+--- GDXin=C:\Users\Jesse Bukenberger\Documents\GitHub\TransExpand\DC_OPF_DetEQ\300_bus_WECC_files\paper_test_array\test_array\MtoG.gdx
+--- . WECC_MIP_gams.txt(72) 4 Mb 2 Errors
+--- tep_MIP.gms(142) 4 Mb 8 Errors
+*** Status: Compilation error(s)
+--- Job tep_MIP.gms Stop 08/07/18 16:26:55 elapsed 0:00:00.029

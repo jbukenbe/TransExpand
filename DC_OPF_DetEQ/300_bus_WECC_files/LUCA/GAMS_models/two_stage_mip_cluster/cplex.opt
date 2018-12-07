@@ -1,0 +1,8 @@
+lpmethod 6
+SolnPoolPop 1
+mipemphasis 0
+mipstart 1
+epper .0000001
+startalg 4
+subalg 0
+

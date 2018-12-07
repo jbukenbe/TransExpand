@@ -1,0 +1,78 @@
+SETS
+i               Network nodes		/i1*i312/ 
+g		Generators		/g1*g980/
+t		Investment Stages	/t1*t2/
+s		Scenarios		/s1*s10/
+h		Hours			/h1*h8760/
+k		Cosine approx segments	/k1*k30/
+atk		Cos segment attributes	/m, n/
+l		Lines			/l1*l705/
+cl              Line parameters		/r, s, pmax, current, can, cost/
+gen_par		gen_parameters		/pmin, pmax, heat_rate, vom, co2/
+subs(s)      	Subset of active Scenarios
+subh(h)		Subset of active Hours              
+cand(l)     	Subset of candidate lines 	/l655*l705/
+built(l)	Subset of existing lines  	/l1*l654/
+nd(g)		Non-dispatchable generators	/g332*g980/  
+ss(s,s)		Scenarios that are connected in state space 	/s1.(s2*s10)/
+ii(l,i,i)	Buses connected in the graph
+pos_scen(t,s)	Scenarios possible at time stage t
+$include	"WECC_gen_loc_data.txt"
+$include	"WECC_scen_time_data.txt"
+;
+
+ALIAS(i,j);
+
+Parameters
+psubs_w(s)	weight of scenario subset for expectation calculation
+psubh_w(h)	weight of hour subset for expectation calculation
+pload(i,t,s,h)		load at each bus scenario pair
+pRenew(nd,t,s,h)	generation at each non_dispatchable generator pair
+pVarCost(g,t,s,h)   	variable cost for operating generator g
+;
+
+$include	"WECC_gen_data.txt"
+$include	"WECC_line_data.txt"
+
+
+
+$if not set gdxin $set gdxin MtoG
+$GDXIN %gdxin%
+$LOAD  subs, subh, psubs_w, psubh_w, pload, pRenew, pVarCost
+$GDXIN
+
+
+
+Table ds(k,atk)
+            m                      n
+k1        -0.993060583        -0.560393213
+k2        -0.976567707        -0.53728628
+k3        -0.95031729        -0.50309362
+k4        -0.914571616        -0.460082155
+k5        -0.869687845        -0.410544975
+k6        -0.816114441        -0.356759814
+k7        -0.754386691        -0.300948473
+k8        -0.685121358        -0.245237793
+k9        -0.60901052        -0.191622726
+k10        -0.526814649        -0.141932029
+k11        -0.439355021        -0.097797075
+k12        -0.347505503        -0.06062421
+k13        -0.252183824        -0.031571058
+k14        -0.154342408        -0.011527099
+k15        -0.054958854        -0.001098792
+k16        0.044973831        -0.000599461
+k17        0.144457153        -0.010044072
+k18        0.242497106        -0.029148983
+k19        0.338114108        -0.057336674
+k20        0.430352786        -0.093745374
+k21        0.518291521        -0.137243473
+k22        0.601051659        -0.186448498
+k23        0.677806287        -0.239750399
+k24        0.747788498        -0.295338808
+k25        0.810299054        -0.351233896
+k26        0.86471337        -0.405320389
+k27        0.910487756        -0.455384256
+k28        0.947164849        -0.499151551
+k29        0.974378184        -0.534328863
+k30        0.991855854        -0.558644769
+;
