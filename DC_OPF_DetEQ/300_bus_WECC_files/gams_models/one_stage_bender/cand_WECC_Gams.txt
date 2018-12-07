@@ -6,21 +6,18 @@ s		Scenarios		/s1*s8760/
 k		Cosine approx segments	/k1*k30/
 atk		Cos segment attributes	/m, n/
 l		Lines			/l1*l705/
-cl              Line parameters		/r, s, pmax, current, can, cost/
+cl              Line parameters		/r, s, pmax, can, current, cost/
 gen_par		gen_parameters		/pmin, pmax, heat_rate, vom, co2/
 subs(s)      	Active Scenarios              
-cand(l)     	Subset of candidate lines 	/l655*l705/
-built(l)	Subset of existing lines  	/l1*l654/
-nd(g)		Non-dispatchable generators	/g332*g980/  
-ii(l,i,i)	Nodes connected in the graph
+lines(l)     	Lines built for this candidate plan
+nd(g)		Non-dispatchable generators /g332*g980/  
+ii(lines,i,i)   Nodes connected in the graph
 $include	"WECC_gen_loc_data.txt"
 ;
 
 ALIAS(i,j);
 
 Parameters
-psub_w(s)	weight of scenario subset for expectation calculation
-psub_mean(s)	mean of scenarios from plan sample
 pload(i,s)	load at each bus scenario pair
 pRenew(nd,s)	generation at each non_dispatchable generator pair
 pVarCost(g,s)   variable cost for operating generator g
@@ -33,7 +30,7 @@ $include	"WECC_line_data.txt"
 
 $if not set gdxin $set gdxin MtoG
 $GDXIN %gdxin%
-$LOAD  subs, psub_w, psub_mean, pload, pRenew, pVarCost
+$LOAD  subs, lines, pload, pRenew, pVarCost
 $GDXIN
 
 
