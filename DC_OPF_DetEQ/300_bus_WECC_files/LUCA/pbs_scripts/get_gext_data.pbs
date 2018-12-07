@@ -1,0 +1,39 @@
+#PBS -S/bin/bash
+#PBS -l nodes=1:ppn=4
+#PBS -l walltime=10:00:00
+#PBS -e error.txt
+#PBS -o get_gext_output.txt
+#PBS -j oe
+#PBS -A open
+#PBS –M jvb5999@psu.edu
+#PBS -t 1-25
+
+echo "Job started on $(hostname) at $(date)"
+
+cd $PBS_O_WORKDIR
+
+module purge
+module load matlab
+module load gams
+
+
+export LD_PRELOAD=/opt/aci/sw/gams/24.8.5/libstdc++.so.6
+
+
+mkdir get_data_run_${PBS_ARRAYID}
+WORKDIR=/storage/home/jvb5999/Desktop/LUCA_runs/
+rsync -r /storage/home/jvb5999/Desktop/LUCA_runs/get_gextrap_data/ /storage/home/jvb5999/Desktop/LUCA_runs/get_data_run_${PBS_ARRAYID}
+
+cd /storage/home/jvb5999/Desktop/LUCA_runs/get_data_run_${PBS_ARRAYID}
+
+echo ${PBS_ARRAYID}
+matlab -bin -nodisplay -nosplash -r "run_gextrap_opf_array(${PBS_ARRAYID})"
+
+cp gext_run_${PBS_ARRAYID}.mat $WORKDIR
+cd $PBS_O_WORKDIR
+rm -r get_data_run_${PBS_ARRAYID}
+
+
+echo "Job Ended at $(date)"
+
+

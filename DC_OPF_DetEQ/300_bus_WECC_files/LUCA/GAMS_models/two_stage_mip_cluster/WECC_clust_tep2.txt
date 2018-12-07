@@ -1,0 +1,45 @@
+SETS
+i               Network nodes		/i1*i312/ 
+g		Generators		/g1*g4992/
+t		Investment Stages	/t1*t2/
+c		Clusters
+s		Scenarios		/s1*s501/
+h		Hours			/h1*h8760/
+l		Lines			/l1*l705/
+cl              Line parameters		/r, s, pmax, current, can, cost/
+*gen_par		gen_parameters		/pmin, pmax, heat_rate, vom, co2/
+subs(s)      	Subset of active Scenarios
+subh(h)		Subset of active Hours              
+cand(l)     	Subset of candidate lines 	/l655*l705/
+built(l)	Subset of existing lines  	/l1*l654/
+nd(g)		Non-dispatchable generators	  
+sg(s,g)		Generators built in each scenario
+cc(c,c)		Clusters connected in state space		
+ii(l,i,i)	Buses connected in the graph
+csh(c,s,h)	Grouping of scenarios and hours to run in each cluster
+$include	"WECC_gen_loc_data.txt"
+;
+
+ALIAS(i,j);
+ALIAS(c,k);
+
+Parameters
+pc_w(c)			weight of cluster from sum of probability of scenarios within cluster occuring 
+psub_w(c,subs,subh)	weight of hour for calculating cluster expected cost over several scenario hour pairs
+ph_means(c,subs,subh)	mean operating cost for given hour
+pcluster_means(c)	global mean of all data
+pload(i,subs,subh)	load at each bus scenario pair
+pRenew(nd,subs,subh)	generation at each non_dispatchable generator pair
+pVarCost(g,subs,subh)  	variable cost for operating generator g
+pgen_min(g)		Minimum required generation for generator g
+pgen_max(g)		Maximum generation capacity for generator g
+;
+
+$include	"WECC_line_data.txt"
+
+
+
+$if not set gdxin $set gdxin MtoG
+$GDXIN %gdxin%
+$LOAD  c, subs, subh, nd, sg, cc, csh, pc_w, psub_w, ph_means, pcluster_means, pload, pRenew, pVarCost, pgen_min, pgen_max
+$GDXIN
